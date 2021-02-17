@@ -9,6 +9,7 @@ namespace Persistence
     {
     }
     
+    // DbSet represents a table in db
     public DbSet<Activity> Activities { get; set; }
   }
 }
