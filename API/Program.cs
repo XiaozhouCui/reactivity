@@ -14,7 +14,7 @@ namespace API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             // create a db
             var host = CreateHostBuilder(args).Build();
@@ -27,8 +27,10 @@ namespace API
             {
                 // DataContext comes from Persistence namespace
                 var context = services.GetRequiredService<DataContext>();
-                // Migrate() will create the database if it does not exist
-                context.Database.Migrate();
+                // MigrateAsync() will create the database if it does not exist
+                await context.Database.MigrateAsync();
+                // async seeder function SeedData() will populate the DB is there is no activities in it
+                await Seed.SeedData(context);
             }
             catch (Exception ex)
             {
@@ -37,7 +39,7 @@ namespace API
             }
 
             // Start the application
-            host.Run();
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
