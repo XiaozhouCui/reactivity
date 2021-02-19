@@ -1,39 +1,44 @@
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Domain;
 using MediatR;
 using Persistence;
 
 namespace Application.Activities
 {
-    public class Create
+    public class Edit
     {
-        // Command do NOT return anything, as opposed to Query
         public class Command : IRequest
         {
             // public property, Acitvity obj from client side
             public Activity Activity { get; set; }
         }
 
-        // need to implement IRequestHandler interface to include Handle() method
+        // implement the interface IRequestHandler
         public class Handler : IRequestHandler<Command>
         {
-            // inject DataContext from Persistence
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+            // dependency injection
+            public Handler(DataContext context, IMapper mapper)
             {
-                // initialise field "_context" from parameter "context"
+                _mapper = mapper;
                 _context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                // currently the _context is in memory, no async
-                _context.Activities.Add(request.Activity);
+                // get the activity by ID from DB
+                var activity = await _context.Activities.FindAsync(request.Activity.Id);
+
+                // update the fetched activity
+                // activity.Title = request.Activity.Title ?? activity.Title;
+                _mapper.Map(request.Activity, activity); // use auto mapper, no need to repeat all properties
 
                 await _context.SaveChangesAsync();
 
-                return Unit.Value; // equivalent to returning nothing
+                return Unit.Value;
             }
         }
     }

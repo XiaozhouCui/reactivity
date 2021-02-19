@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using AutoMapper;
+using Application.Core;
 
 namespace API
 {
@@ -51,6 +53,8 @@ namespace API
             });
             // add Mediator
             services.AddMediatR(typeof(List.Handler).Assembly); // where to find mediator handler
+            // add AutoMapper
+            services.AddAutoMapper(typeof(MappingProfiles).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

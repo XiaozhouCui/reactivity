@@ -28,10 +28,17 @@ namespace API.Controllers
 
         // endpoint to create an activity
         [HttpPost]
-        // FromBody attribute helps locate the activity obj
-        public async Task<IActionResult> CreateActivity([FromBody]Activity activity)
+        public async Task<IActionResult> CreateActivity(Activity activity)
         {
             return Ok(await Mediator.Send(new Create.Command { Activity = activity }));
+        }
+
+        // endpoint to update an activity
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditActivity(Guid id, Activity activity)
+        {
+            activity.Id = id;
+            return Ok(await Mediator.Send(new Edit.Command { Activity = activity }));
         }
     }
 }
