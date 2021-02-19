@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-// Logic to query activities: using MediatR interface IRequest and IRequestHandler
+// Application layer to query activities: using MediatR interface IRequest and IRequestHandler
 namespace Application.Activities
 {
     public class List
