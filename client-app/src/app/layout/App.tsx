@@ -7,6 +7,7 @@ import ActivityDashboard from '../../features/activities/dashboard/ActivityDashb
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([])
+  const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined)
 
   useEffect(() => {
     axios
@@ -16,11 +17,24 @@ function App() {
       })
   }, [])
 
+  const handleSelectActivity = (id: string) => {
+    setSelectedActivity(activities.find((x) => x.id === id))
+  }
+
+  const handleCancelSelectActivity = () => {
+    setSelectedActivity(undefined)
+  }
+
   return (
     <>
       <NavBar />
       <Container style={{ marginTop: '7em' }}>
-        <ActivityDashboard activities={activities} />
+        <ActivityDashboard
+          activities={activities}
+          selectedActivity={selectedActivity}
+          selectActivity={handleSelectActivity}
+          cancelSelectActivity={handleCancelSelectActivity}
+        />
       </Container>
     </>
   )
