@@ -7,7 +7,9 @@ import ActivityDashboard from '../../features/activities/dashboard/ActivityDashb
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([])
-  const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined)
+  const [selectedActivity, setSelectedActivity] = useState<
+    Activity | undefined
+  >(undefined)
   const [editMode, setEditMode] = useState(false)
 
   useEffect(() => {
@@ -35,6 +37,17 @@ function App() {
     setEditMode(false)
   }
 
+  const handleCreateOrEditActivity = (activity: Activity) => {
+    activity.id
+      ? setActivities([
+          ...activities.filter((x) => x.id !== activity.id),
+          activity,
+        ]) // edit an existing activity
+      : setActivities([...activities, activity]) // create a new activity
+    setEditMode(false)
+    setSelectedActivity(activity)
+  }
+
   return (
     <>
       <NavBar openForm={handleFormOpen} />
@@ -47,6 +60,7 @@ function App() {
           editMode={editMode}
           openForm={handleFormOpen}
           closeForm={handleFormClose}
+          createOrEdit={handleCreateOrEditActivity}
         />
       </Container>
     </>
