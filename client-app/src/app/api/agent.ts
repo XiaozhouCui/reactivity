@@ -33,6 +33,12 @@ const requests = {
 const Activities = {
   // in list(), <T> is <Activity[]>
   list: () => requests.get<Activity[]>('/activities'),
+  // in details(), <T> is <Activity>
+  details: (id: string) => requests.get<Activity>(`/activities/${id}`),
+  // in following methods, <T> is <void>, meaning not return anything from request
+  create: (activity: Activity) => axios.post<void>('/activities', activity),
+  update: (activity: Activity) => axios.put<void>(`/activities/${activity.id}`, activity),
+  delete: (id: string) => axios.delete<void>(`/activities/${id}`),
 }
 
 const agent = { Activities }
