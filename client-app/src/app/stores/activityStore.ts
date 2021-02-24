@@ -1,7 +1,6 @@
 import { Activity } from './../models/activity'
 import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
-import { v4 as uuid } from 'uuid'
 export default class ActivityStore {
   // MobX Observables: class properties
   activityRegistry = new Map<string, Activity>() // initialise Map object: { id1: activity1, id2: activity2, ... }
@@ -87,7 +86,6 @@ export default class ActivityStore {
 
   createActivity = async (activity: Activity) => {
     this.loading = true
-    activity.id = uuid()
     try {
       await agent.Activities.create(activity)
       // any state-changing steps after "await" need to be wrapped in action
