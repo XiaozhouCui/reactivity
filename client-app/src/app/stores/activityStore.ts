@@ -49,13 +49,17 @@ export default class ActivityStore {
     if (activity) {
       // if activity is already in MobX store, no need to load from API
       this.selectedActivity = activity
+      return activity
     } else {
       this.loadingInitial = true
       try {
         activity = await agent.Activities.details(id)
         this.setActivity(activity)
-        this.selectedActivity = activity
+        runInAction(() => {
+          this.selectedActivity = activity
+        })
         this.setLoadingInitial(false)
+        return activity
       } catch (error) {
         console.log(error)
         this.setLoadingInitial(false)

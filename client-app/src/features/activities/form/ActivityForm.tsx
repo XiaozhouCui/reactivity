@@ -1,14 +1,16 @@
 import { observer } from 'mobx-react-lite'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Button, Form, Segment } from 'semantic-ui-react'
+import LoadingComponent from '../../../app/layout/LoadingComponent'
 import { useStore } from '../../../app/stores/store'
 
 const ActivityForm = () => {
   const { activityStore } = useStore()
-  const { selectedActivity, createActivity, updateActivity, loading } = activityStore
+  const { createActivity, updateActivity, loading, loadActivity, loadingInitial } = activityStore
+  const { id } = useParams<{id: string}>()
 
-  // if activity is null, use the right hand side expression
-  const initialState = selectedActivity ?? {
+  const [activity, setActivity] = useState({
     id: '',
     title: '',
     category: '',
@@ -16,9 +18,12 @@ const ActivityForm = () => {
     date: '',
     city: '',
     venue: '',
-  }
+  })
 
-  const [activity, setActivity] = useState(initialState)
+  useEffect(() => {
+    // "!" will override ts check
+    if (id) loadActivity(id).then(activity => setActivity(activity!))
+  }, [id, loadActivity])
 
   const handleSubmit = () => {
     activity.id ? updateActivity(activity) : createActivity(activity)
@@ -28,6 +33,8 @@ const ActivityForm = () => {
     const {name, value} = event.target; // get attributes
     setActivity({ ...activity, [name]: value })
   }
+
+  if (loadingInitial) return <LoadingComponent content='Loading activity...' />
 
   return (
     <Segment clearing>
