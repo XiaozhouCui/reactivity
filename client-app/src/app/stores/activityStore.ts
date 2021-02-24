@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid'
 export default class ActivityStore {
   // MobX Observables: class properties
   // activities: Activity[] = []
-  activityRegistry = new Map<string, Activity>() // { id1: activity1, id2: activity2, ... }
+  activityRegistry = new Map<string, Activity>() // initialise Map object: { id1: activity1, id2: activity2, ... }
   selectedActivity: Activity | undefined = undefined
   editMode = false
   loading = false
