@@ -1,15 +1,15 @@
 import React, { SyntheticEvent, useState } from 'react'
 import { Button, Item, Label, Segment } from 'semantic-ui-react'
 import { Activity } from '../../../app/models/activity'
+import { useStore } from '../../../app/stores/store';
 
 interface Props {
   activities: Activity[]
-  selectActivity: (id: string) => void
   deleteActivity: (id: string) => void
   submitting: boolean
 }
 
-const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }: Props) => {
+const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
   // use target to show loader on the clicked button only, not on all delete buttons
   const [target, setTarget] = useState('');
 
@@ -18,6 +18,8 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
     setTarget(e.currentTarget.name)
     deleteActivity(id);
   }
+
+  const { activityStore } = useStore()
 
   return (
     <Segment>
@@ -35,7 +37,7 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
               </Item.Description>
               <Item.Extra>
                 <Button
-                  onClick={() => selectActivity(activity.id)}
+                  onClick={() => activityStore.selectActivity(activity.id)}
                   floated='right'
                   content='View'
                   color='blue'
