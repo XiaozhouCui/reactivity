@@ -1,15 +1,12 @@
+import { observer } from 'mobx-react-lite';
 import React, { SyntheticEvent, useState } from 'react'
 import { Button, Item, Label, Segment } from 'semantic-ui-react'
-import { Activity } from '../../../app/models/activity'
 import { useStore } from '../../../app/stores/store';
 
-interface Props {
-  activities: Activity[]
-  deleteActivity: (id: string) => void
-  submitting: boolean
-}
+const ActivityList = () => {
+  const { activityStore } = useStore()
+  const { deleteActivity, activities, loading } = activityStore
 
-const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
   // use target to show loader on the clicked button only, not on all delete buttons
   const [target, setTarget] = useState('');
 
@@ -18,8 +15,6 @@ const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
     setTarget(e.currentTarget.name)
     deleteActivity(id);
   }
-
-  const { activityStore } = useStore()
 
   return (
     <Segment>
@@ -44,7 +39,7 @@ const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
                 />
                 <Button
                   name={activity.id}
-                  loading={submitting && target === activity.id}
+                  loading={loading && target === activity.id}
                   onClick={(e) => handleActivityDelete(e, activity.id)}
                   floated='right'
                   content='Delete'
@@ -60,4 +55,4 @@ const ActivityList = ({ activities, deleteActivity, submitting }: Props) => {
   )
 }
 
-export default ActivityList
+export default observer(ActivityList)
