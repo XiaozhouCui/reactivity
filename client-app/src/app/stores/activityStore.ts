@@ -4,7 +4,6 @@ import agent from '../api/agent'
 import { v4 as uuid } from 'uuid'
 export default class ActivityStore {
   // MobX Observables: class properties
-  // activities: Activity[] = []
   activityRegistry = new Map<string, Activity>() // initialise Map object: { id1: activity1, id2: activity2, ... }
   selectedActivity: Activity | undefined = undefined
   editMode = false
@@ -33,11 +32,8 @@ export default class ActivityStore {
     try {
       const activities = await agent.Activities.list()
       activities.forEach((activity) => {
-        // only keep the date part of iso-string
-        activity.date = activity.date.split('T')[0]
-        // mutating state is fine in MobX, as opposed to REDUX
-        // this.activities.push(activity)
-        this.activityRegistry.set(activity.id, activity)
+        // arrow function auto-bind to "this" class
+        this.setActivity(activity)
       })
       this.setLoadingInitial(false)
     } catch (error) {
@@ -47,27 +43,40 @@ export default class ActivityStore {
   }
 
   // only MobX Action can change state
+  loadActivity = async (id: string) => {
+    let activity = this.getActivity(id)
+    if (activity) {
+      // if activity is already in MobX store, no need to load from API
+      this.selectedActivity = activity
+    } else {
+      this.loadingInitial = true
+      try {
+        activity = await agent.Activities.details(id)
+        this.setActivity(activity)
+        this.setLoadingInitial(false)
+      } catch (error) {
+        console.log(error)
+        this.setLoadingInitial(false)
+      }
+    }
+  }
+
+  // private helper function
+  private setActivity = (activity: Activity) => {
+    // only keep the date part of iso-string
+    activity.date = activity.date.split('T')[0]
+    // mutating state is fine in MobX, as opposed to REDUX
+    // this.activities.push(activity)
+    this.activityRegistry.set(activity.id, activity)
+  }
+
+  // private helper function
+  private getActivity = (id: string) => {
+    return this.activityRegistry.get(id)
+  }
+
   setLoadingInitial = (state: boolean) => {
     this.loadingInitial = state
-  }
-
-  selectActivity = (id: string) => {
-    // this.selectedActivity = this.activities.find((a) => a.id === id)
-    this.selectedActivity = this.activityRegistry.get(id)
-  }
-
-  cancelSelectedActivity = () => {
-    // arrow function auto-bind setTitle() to "this" class
-    this.selectedActivity = undefined
-  }
-
-  openForm = (id?: string) => {
-    id ? this.selectActivity(id) : this.cancelSelectedActivity()
-    this.editMode = true
-  }
-
-  closeForm = () => {
-    this.editMode = false
   }
 
   createActivity = async (activity: Activity) => {
@@ -96,10 +105,6 @@ export default class ActivityStore {
     try {
       await agent.Activities.update(activity)
       runInAction(() => {
-        // this.activities = [
-        //   ...this.activities.filter((a) => a.id !== activity.id),
-        //   activity,
-        // ]
         this.activityRegistry.set(activity.id, activity)
         this.selectedActivity = activity
         this.editMode = false
@@ -118,9 +123,7 @@ export default class ActivityStore {
     try {
       await agent.Activities.delete(id)
       runInAction(() => {
-        // this.activities = [...this.activities.filter((a) => a.id !== id)]
         this.activityRegistry.delete(id)
-        if (this.selectedActivity?.id === id) this.cancelSelectedActivity()
         this.loading = false
       })
     } catch (error) {
