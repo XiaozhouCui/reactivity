@@ -5,7 +5,7 @@ import { useStore } from '../../../app/stores/store';
 
 const ActivityList = () => {
   const { activityStore } = useStore()
-  const { deleteActivity, activities, loading } = activityStore
+  const { deleteActivity, activitiesByDate, loading } = activityStore
 
   // use target to show loader on the clicked button only, not on all delete buttons
   const [target, setTarget] = useState('');
@@ -19,7 +19,7 @@ const ActivityList = () => {
   return (
     <Segment>
       <Item.Group divided>
-        {activities.map((activity) => (
+        {activitiesByDate.map((activity) => (
           <Item key={activity.id}>
             <Item.Content>
               <Item.Header as='a'>{activity.title}</Item.Header>
