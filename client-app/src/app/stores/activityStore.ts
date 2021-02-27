@@ -18,11 +18,26 @@ export default class ActivityStore {
     // })
   }
 
-  // computed property as getter
+  // computed function as getter
   get activitiesByDate() {
     // sort the activities by date as an array
     return Array.from(this.activityRegistry.values()).sort(
       (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    )
+  }
+
+  // another computed getter function
+  get groupedActivities() {
+    // return an array of [date, activities] arrays
+    return Object.entries(
+      // activities grouped by date
+      this.activitiesByDate.reduce((activities, activity) => {
+        const date = activity.date
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity]
+        return activities
+      }, {} as { [key: string]: Activity[] }) // {} is the initial value
     )
   }
 
