@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace API.Controllers
 {
+    // ApiController attribute: API validation with auto HTTP 400 responses
     [ApiController]
     [Route("api/[controller]")]
     public class BaseApiController : ControllerBase

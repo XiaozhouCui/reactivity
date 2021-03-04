@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using API.Extensions;
-
+using FluentValidation.AspNetCore;
+using Application.Activities;
 namespace API
 {
     public class Startup
@@ -18,8 +19,12 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
+            // make the app aware of FluentValidation from NuGet
+            services.AddControllers().AddFluentValidation(config => 
+            {
+                // any validators in Application layer will be registered with controllers
+                config.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
             // all methods are saved in API.Extensions
             services.AddApplicationServices(_config);
         }

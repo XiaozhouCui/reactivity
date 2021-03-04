@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -13,6 +14,16 @@ namespace Application.Activities
         {
             // public property, Acitvity obj from client side
             public Activity Activity { get; set; }
+        }
+
+        // validate the activity data in PUT request
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                // Command class contains Activity, use ActivityValidator in Application layer as rules
+                RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
+            }
         }
 
         // implement the interface IRequestHandler
