@@ -1,6 +1,7 @@
 namespace Application.Core
 {
-    // Result will be used for any entity (e.g. Activity), need a generic type <T>
+    // Result can be used for any entity (e.g. Activity), need a generic type <T>
+    // Result will be used for error handling
     public class Result<T>
     {
         public bool IsSuccess { get; set; }

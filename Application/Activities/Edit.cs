@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using AutoMapper;
 using Domain;
 using FluentValidation;
@@ -10,7 +11,7 @@ namespace Application.Activities
 {
     public class Edit
     {
-        public class Command : IRequest
+        public class Command : IRequest<Result<Unit>>
         {
             // public property, Acitvity obj from client side
             public Activity Activity { get; set; }
@@ -27,7 +28,7 @@ namespace Application.Activities
         }
 
         // implement the interface IRequestHandler
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -38,18 +39,23 @@ namespace Application.Activities
                 _context = context;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // get the activity by ID from DB
                 var activity = await _context.Activities.FindAsync(request.Activity.Id);
+
+                // check if activity exists in db
+                if (activity == null) return null;
 
                 // update the fetched activity
                 // activity.Title = request.Activity.Title ?? activity.Title;
                 _mapper.Map(request.Activity, activity); // use auto mapper, no need to repeat all properties
 
-                await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync() > 0;
 
-                return Unit.Value;
+                if (!result) return Result<Unit>.Failure("Failed to update activity");
+
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }

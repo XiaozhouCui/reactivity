@@ -20,7 +20,8 @@ namespace API.Controllers
         // method HandleResult will return ActionResult, passing in Result of type <T> as parameter (result from Mediator.Send())
         protected ActionResult HandleResult<T>(Result<T> result)
         {
-            // Error handling: 404 and 400
+            // Error handling: 404, 400 etc.
+            if (result == null) return NotFound(); // for item not found in db before edit/delete
             if (result.IsSuccess && result.Value != null)
                 return Ok(result.Value);
             if (result.IsSuccess && result.Value == null)
