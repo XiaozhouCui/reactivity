@@ -11,11 +11,13 @@ namespace API.Controllers
     {
         // endpoint to get a list of activities
         [HttpGet]
-        public async Task<ActionResult<List<Activity>>> GetActivities()
+        public async Task<IActionResult> GetActivities()
         {
             // get response from mediator, initiate an instance of List in Activities
             // Mediator is the protected property in parent class BaseApiController
-            return await Mediator.Send(new List.Query());
+            var result = await Mediator.Send(new List.Query());
+            // call HandleResult method from BaseApiController for Error Handling (404, 400 etc.)
+            return HandleResult(result);
             // return await _context.Activities.ToListAsync();
         }
 
@@ -33,7 +35,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateActivity(Activity activity)
         {
-            return Ok(await Mediator.Send(new Create.Command { Activity = activity }));
+            return HandleResult(await Mediator.Send(new Create.Command { Activity = activity }));
         }
 
         // endpoint to update an activity

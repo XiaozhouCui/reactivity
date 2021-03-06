@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Domain;
 using FluentValidation;
 using MediatR;
@@ -9,8 +10,8 @@ namespace Application.Activities
 {
     public class Create
     {
-        // Command do NOT return anything, as opposed to Query
-        public class Command : IRequest
+        // Command do NOT return anything, only the result type of Mediator Unit (Unit.Value means nothing)
+        public class Command : IRequest<Result<Unit>>
         {
             // public property, Acitvity obj from client side
             public Activity Activity { get; set; }
@@ -27,7 +28,7 @@ namespace Application.Activities
         }
 
         // need to implement IRequestHandler interface to include Handle() method
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             // inject DataContext from Persistence
             private readonly DataContext _context;
@@ -37,14 +38,18 @@ namespace Application.Activities
                 _context = context;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            // Result of type Mediator Unit
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                // currently the _context is in memory, no async
+                // _context is the database object
                 _context.Activities.Add(request.Activity);
 
-                await _context.SaveChangesAsync();
+                // check result of saving changes to database
+                var result = await _context.SaveChangesAsync() > 0;
 
-                return Unit.Value; // equivalent to returning nothing
+                if (!result) return Result<Unit>.Failure("Failed to create activity");
+
+                return Result<Unit>.Success(Unit.Value); // Unit.Value is equivalent to returning nothing, only notifying success
             }
         }
     }
