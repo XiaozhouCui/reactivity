@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using Domain;
 using MediatR;
 using Persistence;
@@ -11,13 +12,13 @@ namespace Application.Activities
     public class Details
     {
 
-        public class Query : IRequest<Activity>
+        public class Query : IRequest<Result<Activity>>
         {
             // need ID parameter in request Query
             public Guid Id { get; set; }
         }
         // add handler here. input: Query, output: Activity
-        public class Handler : IRequestHandler<Query, Activity>
+        public class Handler : IRequestHandler<Query, Result<Activity>>
         {
             // inject DataContext from Persistence
             // initialise field "_context" from paramenter "context"
@@ -28,10 +29,12 @@ namespace Application.Activities
             }
 
             // implement interface IRequestHandler to get the following code
-            public async Task<Activity> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
             {
                 // get ID from request (Query)
-                return await _context.Activities.FindAsync(request.Id); // find by activity ID
+                var activity = await _context.Activities.FindAsync(request.Id); // find by activity ID
+
+                return Result<Activity>.Success(activity);
             }
         }
     }

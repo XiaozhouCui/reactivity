@@ -21,9 +21,12 @@ namespace API.Controllers
 
         // get single activity by ID: activities/id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(Guid id)
+        public async Task<ActionResult> GetActivity(Guid id)
         {
-            return await Mediator.Send(new Details.Query { Id = id }); // set Id = id when class is initialised
+            var result = await Mediator.Send(new Details.Query { Id = id }); // set Id = id when class is initialised
+
+            // call HandleResult method from BaseApiController for Error Handling (404, 400 etc.)
+            return HandleResult(result);
         }
 
         // endpoint to create an activity
