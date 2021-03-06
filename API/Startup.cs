@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using FluentValidation.AspNetCore;
 using Application.Activities;
+using API.Middleware;
+
 namespace API
 {
     public class Startup
@@ -30,11 +32,14 @@ namespace API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // It adds Middlewares to the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>(); // error handling middleware should be added first
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // order of middlewares is important
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
