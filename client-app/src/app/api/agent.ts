@@ -1,6 +1,7 @@
 import { Activity } from '../models/activity'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
+import { history } from '../..'
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -25,7 +26,8 @@ axios.interceptors.response.use(
         toast.error('unauthorised')
         break
       case 404:
-        toast.error('not found')
+        // use the custom history object outside React components
+        history.push('/not-found')
         break
       case 500:
         toast.error('server error')
