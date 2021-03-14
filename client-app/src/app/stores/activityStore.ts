@@ -7,7 +7,7 @@ export default class ActivityStore {
   selectedActivity: Activity | undefined = undefined
   editMode = false
   loading = false
-  loadingInitial = true
+  loadingInitial = false
 
   constructor() {
     // makeAutoObservable will auto convert class properties into MobX Observables, and methods into MobX Actions
