@@ -12,6 +12,7 @@ import MyTextArea from '../../../app/common/form/MyTextArea'
 import MySelectInput from '../../../app/common/form/MySelectInput'
 import { categoryOptions } from '../../../app/common/options/categoryOptions'
 import MyDateInput from '../../../app/common/form/MyDateInput'
+import { Activity } from '../../../app/models/activity'
 
 const ActivityForm = () => {
   const { activityStore } = useStore()
@@ -25,12 +26,12 @@ const ActivityForm = () => {
   const { id } = useParams<{ id: string }>()
   const history = useHistory()
 
-  const [activity, setActivity] = useState({
+  const [activity, setActivity] = useState<Activity>({
     id: '',
     title: '',
     category: '',
     description: '',
-    date: '',
+    date: null,
     city: '',
     venue: '',
   })
@@ -90,7 +91,7 @@ const ActivityForm = () => {
               name='date'
               showTimeSelect
               timeCaption='time'
-              dateFormat='MMMM d, yyyy h:mm aa'
+              dateFormat='d MMMM yyyy, h:mm aa'
             />
             <MyTextInput placeholder='City' name='city' />
             <MyTextInput placeholder='Venue' name='venue' />

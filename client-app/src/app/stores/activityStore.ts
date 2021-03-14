@@ -1,6 +1,8 @@
 import { Activity } from './../models/activity'
 import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
+import { format } from 'date-fns'
+
 export default class ActivityStore {
   // MobX Observables: class properties
   activityRegistry = new Map<string, Activity>() // initialise Map object: { id1: activity1, id2: activity2, ... }
@@ -22,7 +24,7 @@ export default class ActivityStore {
   get activitiesByDate() {
     // sort the activities by date as an array
     return Array.from(this.activityRegistry.values()).sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+      (a, b) => a.date!.getTime() - b.date!.getTime()
     )
   }
 
@@ -32,7 +34,8 @@ export default class ActivityStore {
     return Object.entries(
       // activities grouped by date
       this.activitiesByDate.reduce((activities, activity) => {
-        const date = activity.date
+        // get the date string with date-fns
+        const date = format(activity.date!, 'dd MMM yyyy')
         activities[date] = activities[date]
           ? [...activities[date], activity]
           : [activity]
@@ -83,8 +86,7 @@ export default class ActivityStore {
 
   // private helper function
   private setActivity = (activity: Activity) => {
-    // only keep the date part of iso-string
-    activity.date = activity.date.split('T')[0]
+    activity.date = new Date(activity.date!)
     // mutating state is fine in MobX, as opposed to REDUX
     // this.activities.push(activity)
     this.activityRegistry.set(activity.id, activity)
