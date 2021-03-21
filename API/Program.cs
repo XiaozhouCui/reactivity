@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +29,12 @@ namespace API
             {
                 // DataContext comes from Persistence namespace
                 var context = services.GetRequiredService<DataContext>();
+                // bring in the User Manager to add seed data for app users
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 // MigrateAsync() will create the database if it does not exist
                 await context.Database.MigrateAsync();
                 // async seeder function SeedData() will populate the DB is there is no activities in it
-                await Seed.SeedData(context);
+                await Seed.SeedData(context, userManager);
             }
             catch (Exception ex)
             {
