@@ -22,7 +22,8 @@ namespace API.Extensions
             .AddEntityFrameworkStores<DataContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
+            // get JWT secret key from "appsettings.Development.json" (similar to .env)
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
 
             // use JwtBearer from Nuget
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Domain;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services
@@ -11,6 +12,12 @@ namespace API.Services
     // service need to be injected
     public class TokenService
     {
+        // inject iConfiguration to use environment variables
+        private readonly IConfiguration _config;
+        public TokenService(IConfiguration config)
+        {
+            _config = config;
+        }
         public string CreateToken(AppUser user)
         {
             // the payload of JWT
@@ -21,8 +28,8 @@ namespace API.Services
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
-            // sign token with a key on server
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
+            // sign token with a secret key stored on server (stored in appsettings.Development.json)
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"]));
             // credentials
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
