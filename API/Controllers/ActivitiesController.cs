@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -20,6 +21,9 @@ namespace API.Controllers
             return HandleResult(result);
             // return await _context.Activities.ToListAsync();
         }
+
+        // add auth middleware to protect below endpoints
+        [Authorize]
 
         // get single activity by ID: activities/id
         [HttpGet("{id}")]

@@ -52,6 +52,8 @@ namespace API
 
             app.UseCors("CorsPolicy");
 
+            // authentication must come BEFORE authorization
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
