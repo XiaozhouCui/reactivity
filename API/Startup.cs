@@ -7,6 +7,8 @@ using API.Extensions;
 using FluentValidation.AspNetCore;
 using Application.Activities;
 using API.Middleware;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace API
 {
@@ -22,11 +24,18 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             // make the app aware of FluentValidation from NuGet
-            services.AddControllers().AddFluentValidation(config => 
-            {
-                // any validators in Application layer will be registered with controllers
-                config.RegisterValidatorsFromAssemblyContaining<Create>();
-            });
+            services
+                .AddControllers(opt =>
+                {
+                    // create authorisation policy: every endpoint in api requires authentication
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    opt.Filters.Add(new AuthorizeFilter(policy));
+                })
+                .AddFluentValidation(config =>
+                {
+                    // any validators in Application layer will be registered with controllers
+                    config.RegisterValidatorsFromAssemblyContaining<Create>();
+                });
             // all methods are saved in API.Extensions
             services.AddApplicationServices(_config);
             // basic identity configuration

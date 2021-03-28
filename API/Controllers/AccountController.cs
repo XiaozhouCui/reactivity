@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Services;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    // api controller attribute
+    // api controller attributes
+    [AllowAnonymous] // login/reg endpoints must NOT be protected by auth middleware
     [ApiController]
     // route: api/account/...
     [Route("api/[controller]")]

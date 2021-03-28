@@ -22,8 +22,8 @@ namespace API.Controllers
             // return await _context.Activities.ToListAsync();
         }
 
-        // add auth middleware to protect below endpoints
-        [Authorize]
+        // // add auth middleware to protect below endpoints
+        // [Authorize]
 
         // get single activity by ID: activities/id
         [HttpGet("{id}")]
