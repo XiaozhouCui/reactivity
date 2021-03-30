@@ -28,7 +28,12 @@ namespace Application.Activities
             // Handle is an async method
             public async Task<Result<List<Activity>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return Result<List<Activity>>.Success(await _context.Activities.ToListAsync());
+                // eagerly loading related data: explicitly include Attendees and AppUser
+                var activities = await _context.Activities
+                    .Include(a => a.Attendees)
+                    .ThenInclude(u => u.AppUser)
+                    .ToListAsync();
+                return Result<List<Activity>>.Success(activities);
             }
         }
     }

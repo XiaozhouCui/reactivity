@@ -2,12 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [AllowAnonymous] // temporarily turn off auth for client side development
     public class ActivitiesController : BaseApiController
     {
         // endpoint to get a list of activities

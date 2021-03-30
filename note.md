@@ -9,7 +9,7 @@
 - Run the migration `dotnet ef migrations add ActivityAttendee -p Persistence -s API`
 - To undo the migration, run `dotnet ef migrations remove -p Persistence -s API`
 
-## Add a new project Infrastructure
+## Add a new project: Infrastructure
 - In root solution folder, run `dotnet new classlib -n Infrastructure`
 - To add the new project into solution, run `dotnet sln add Infrastructure`
 - Add reference from Infrastructure to the Application, goto ./Infrastructure/ and run `dotnet add reference ../Application`
