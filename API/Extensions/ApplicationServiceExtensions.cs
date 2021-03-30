@@ -7,6 +7,8 @@ using AutoMapper;
 using Persistence;
 using Application.Core;
 using Application.Activities;
+using Application.Interfaces;
+using Infrastructure.Security;
 
 namespace API.Extensions
 {
@@ -37,6 +39,9 @@ namespace API.Extensions
             services.AddMediatR(typeof(List.Handler).Assembly); // where to find mediator handler
             // add AutoMapper
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+            // Added UserAccessor class from Infrastructure as a service
+            // then we can get the logged in user's username from anywhere in the application
+            services.AddScoped<IUserAccessor, UserAccessor>();
 
             return services;
         }
