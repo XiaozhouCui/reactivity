@@ -14,6 +14,7 @@ import ServerError from '../../features/errors/ServerError'
 import LoginForm from '../../features/users/LoginForm'
 import { useStore } from '../stores/store'
 import LoadingComponent from './LoadingComponent'
+import ModalContainer from '../common/modals/ModalContainer'
 
 function App() {
   const location = useLocation()
@@ -34,6 +35,7 @@ function App() {
   return (
     <>
       <ToastContainer position='bottom-right' />
+      <ModalContainer />
       <Route exact path='/' component={HomePage} />
       <Route
         path={'/(.+)'} 

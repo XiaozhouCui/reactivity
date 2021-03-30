@@ -24,6 +24,7 @@ export default class UserStore {
       // modify an observable inside an action
       runInAction(() => this.user = user)
       history.push('/activities')
+      store.modalStore.closeModal()
     } catch (error) {
       throw error
     }
