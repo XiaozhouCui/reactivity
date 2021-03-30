@@ -14,5 +14,27 @@ namespace Persistence
 
         // DbSet represents a table in db
         public DbSet<Activity> Activities { get; set; }
+
+        // To add many-to-many relationship, add a join table ActivityAttendees
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
+        // override the OnModelCreating method, to add additional configurations
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            // builder will grant acces to entity configurations
+            base.OnModelCreating(builder);
+            // set primary key for the ActivityAttendees table
+            builder.Entity<ActivityAttendee>(x => x.HasKey(aa => new { aa.AppUserId, aa.ActivityId }));
+            // set one side of the relationship
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.AppUser)
+                .WithMany(a => a.Activities)
+                .HasForeignKey(aa => aa.AppUserId);
+            // set the other side of the relationship
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.Activity)
+                .WithMany(a => a.Attendees)
+                .HasForeignKey(aa => aa.ActivityId);
+        }
     }
 }

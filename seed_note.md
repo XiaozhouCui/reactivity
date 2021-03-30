@@ -1,2 +1,0 @@
-- To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`
-- A new dummy database will be created when running `dotnet watch run` 
