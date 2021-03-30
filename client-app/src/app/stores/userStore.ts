@@ -35,4 +35,15 @@ export default class UserStore {
     this.user = null
     history.push('/')
   }
+
+  // get the user that matches the token
+  getUser = async () => {
+    try {
+      const user = await agent.Account.current()
+      // observable can only be modified inside an action
+      runInAction(() => this.user = user)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
