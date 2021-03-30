@@ -1,9 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Activities
@@ -31,9 +33,12 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             // inject DataContext from Persistence
+            // inject IUserAccessor from Application
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 // initialise field "_context" from parameter "context"
                 _context = context;
             }
@@ -42,6 +47,20 @@ namespace Application.Activities
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // _context is the database object
+                // get access to user object from db
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userAccessor.GetUsername());
+
+                // create a new attendee who host/start the activity
+                var attendee = new ActivityAttendee
+                {
+                    AppUser = user,
+                    Activity = request.Activity,
+                    IsHost = true
+                };
+
+                // add the host to the attendee of Activity
+                request.Activity.Attendees.Add(attendee);
+                
                 _context.Activities.Add(request.Activity);
 
                 // check result of saving changes to database
