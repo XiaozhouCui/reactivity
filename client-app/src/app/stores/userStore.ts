@@ -21,7 +21,7 @@ export default class UserStore {
       const user = await agent.Account.login(creds)
       // save the token in common store
       store.commonStore.setToken(user.token)
-      // modify an observable inside an action
+      // observable can only be modified inside an action
       runInAction(() => this.user = user)
       history.push('/activities')
       store.modalStore.closeModal()
@@ -45,6 +45,20 @@ export default class UserStore {
       runInAction(() => this.user = user)
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  register = async (creds: UserFormValues) => {
+    try {
+      const user = await agent.Account.register(creds)
+      // save the token in common store
+      store.commonStore.setToken(user.token)
+      // modify an observable inside an action
+      runInAction(() => this.user = user)
+      history.push('/activities')
+      store.modalStore.closeModal()
+    } catch (error) {
+      throw error
     }
   }
 }
