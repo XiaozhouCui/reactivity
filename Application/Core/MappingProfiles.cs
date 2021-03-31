@@ -1,3 +1,4 @@
+using Application.Activities;
 using AutoMapper;
 using Domain;
 
@@ -11,6 +12,8 @@ namespace Application.Core
         {
             // where we map from, and where to map to
             CreateMap<Activity, Activity>();
+            // also map Activity to ActivityDto
+            CreateMap<Activity, ActivityDto>();
         }
     }
 }
