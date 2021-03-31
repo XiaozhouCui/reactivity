@@ -17,6 +17,7 @@ namespace Application.Activities
         public string City { get; set; }
         public string Venue { get; set; }
         public string HostUsername { get; set; } // identify which attendee is the host of this activity
+        public bool IsCancelled { get; set; } // host can cancel this activity
         public ICollection<Profile> Attendees { get; set; } // include Profile in DTO as Attendee information
     }
 }

@@ -12,6 +12,7 @@ namespace Application.Activities
 {
     public class Create
     {
+        // Command class implements IRequest interface from MediatR
         // Command do NOT return anything, only the result type of Mediator Unit (Unit.Value means nothing)
         public class Command : IRequest<Result<Unit>>
         {

@@ -15,3 +15,7 @@
 - Add reference from Infrastructure to the Application, goto ./Infrastructure/ and run `dotnet add reference ../Application`
 - Add reference from API to Infrastructure, goto ./API/ and run `dotnet add reference ../Infrastructure`
 - Go back to solution root folder, run `dotnet restore`, so all projects are aware of the new dependencies
+
+## Adding new property into Activity entity
+- When a new property is added into the Activity entity in Domain, need to run migration again
+- Goto solution folder and run migration `dotnet ef migrations add AddCancelledProperty -p Persistence -s API`
