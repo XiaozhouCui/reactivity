@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -32,16 +33,27 @@ namespace Application.Activities
             // Handle is an async method
             public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                // eagerly loading related data: explicitly include Attendees and AppUser
+                /*========== EAGLY LOADING RELATED DATA ==========*/
+
+                // // Eagerly loading related data: explicitly include Attendees and AppUser
+                // var activities = await _context.Activities
+                //     .Include(a => a.Attendees)
+                //     .ThenInclude(u => u.AppUser)
+                //     .ToListAsync();
+
+                // // map a List of Activity to a List of ActivityDto, using AutoMapper
+                // var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
+
+                // return Result<List<ActivityDto>>.Success(activitiesToReturn);
+
+                /*========== USE PROJECTION TO LOAD RELATED DATA ==========*/
+
+                // Projection comes from AutoMapper QueryableExtensions, it makes SQL query much cleaner
                 var activities = await _context.Activities
-                    .Include(a => a.Attendees)
-                    .ThenInclude(u => u.AppUser)
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider)
                     .ToListAsync();
 
-                // map a List of Activity to a List of ActivityDto, using AutoMapper
-                var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
-
-                return Result<List<ActivityDto>>.Success(activitiesToReturn);
+                return Result<List<ActivityDto>>.Success(activities);
             }
         }
     }

@@ -17,6 +17,6 @@ namespace Application.Activities
         public string City { get; set; }
         public string Venue { get; set; }
         public string HostUsername { get; set; } // identify which attendee is the host of this activity
-        public ICollection<Profile> Profiles { get; set; } // include profiles in DTO as Attendee information
+        public ICollection<Profile> Attendees { get; set; } // include Profile in DTO as Attendee information
     }
 }
