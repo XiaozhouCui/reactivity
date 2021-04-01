@@ -12,14 +12,13 @@ import MyTextArea from '../../../app/common/form/MyTextArea'
 import MySelectInput from '../../../app/common/form/MySelectInput'
 import { categoryOptions } from '../../../app/common/options/categoryOptions'
 import MyDateInput from '../../../app/common/form/MyDateInput'
-import { Activity, ActivityFormValues } from '../../../app/models/activity'
+import { ActivityFormValues } from '../../../app/models/activity'
 
 const ActivityForm = () => {
   const { activityStore } = useStore()
   const {
     createActivity,
     updateActivity,
-    loading,
     loadActivity,
     loadingInitial,
   } = activityStore
