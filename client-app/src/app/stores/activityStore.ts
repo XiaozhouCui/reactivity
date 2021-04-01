@@ -2,6 +2,7 @@ import { Activity } from './../models/activity'
 import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
 import { format } from 'date-fns'
+import { store } from './store'
 
 export default class ActivityStore {
   // MobX Observables: class properties
@@ -86,6 +87,17 @@ export default class ActivityStore {
 
   // private helper function
   private setActivity = (activity: Activity) => {
+    const user = store.userStore.user
+    // populate user properties in activity
+    if (user) {
+      // if the logged in user is in attendee's list, set isGoing to true
+      activity.isGoing = activity.attendees!.some(
+        (a) => a.username === user.username
+      )
+      activity.isHost = activity.hostUsername === user.username
+      activity.host = activity.attendees?.find(x => x.username === activity.hostUsername)
+    }
+
     activity.date = new Date(activity.date!)
     // mutating state is fine in MobX, as opposed to REDUX
     // this.activities.push(activity)
