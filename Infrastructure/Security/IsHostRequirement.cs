@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Infrastructure.Security
@@ -36,8 +37,12 @@ namespace Infrastructure.Security
             // get Activity ID from http request
             var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
 
-            // get attendee object from db using dual primary key
-            var attendee = _dbContext.ActivityAttendees.FindAsync(userId, activityId).Result;
+            // get attendee object from db using dual primary key, and don't let EF to track it in memory
+            // var attendee = _dbContext.ActivityAttendees.FindAsync(userId, activityId).Result;
+            var attendee = _dbContext.ActivityAttendees
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.AppUserId == userId && x.ActivityId == activityId)
+                .Result;
 
             // if no attendee found, request maker will not meet the authorisation requirement
             if (attendee == null) return Task.CompletedTask;

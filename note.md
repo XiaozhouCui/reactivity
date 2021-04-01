@@ -1,5 +1,6 @@
 ## Reset database with seed values
 - To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`
+- `-s` is for starter project, `-p` is for project
 - A new dummy database will be created when running `dotnet watch run` 
 
 ## Modelling many-to-many relationship
