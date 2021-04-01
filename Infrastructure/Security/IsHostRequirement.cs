@@ -1,0 +1,50 @@
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Persistence;
+
+namespace Infrastructure.Security
+{
+    // only the host can change activity details
+    public class IsHostRequirement : IAuthorizationRequirement
+    {
+    }
+
+    public class IsHostRequirementHandler : AuthorizationHandler<IsHostRequirement>
+    {
+        private readonly DataContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public IsHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _dbContext = dbContext;
+        }
+
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsHostRequirement requirement)
+        {
+            // ActivityAttendee table has double Primary Key: User ID and Activity ID
+
+            // get User ID
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // if a user is not authorised, that user will not meet the authorisation requirement
+            if (userId == null) return Task.CompletedTask;
+
+            // get Activity ID from http request
+            var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
+
+            // get attendee object from db using dual primary key
+            var attendee = _dbContext.ActivityAttendees.FindAsync(userId, activityId).Result;
+
+            // if no attendee found, request maker will not meet the authorisation requirement
+            if (attendee == null) return Task.CompletedTask;
+
+            // if the user is host, auth requirement is met
+            if (attendee.IsHost) context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
+    }
+}

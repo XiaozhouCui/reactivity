@@ -1,7 +1,9 @@
 using System.Text;
 using API.Services;
 using Domain;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +41,21 @@ namespace API.Extensions
                         ValidateAudience = false
                     };
                 });
+            
+            // only the host can modify activity details (to be added in controller as middleware before HttpPut)
+            services.AddAuthorization(opt => 
+            {
+                // add auth policy "IsActivityHost"
+                opt.AddPolicy("IsActivityHost", policy => 
+                {
+                    // add the newly created class IsHostRequirement as requirement
+                    policy.Requirements.Add(new IsHostRequirement());
+                });
+            });
+
+            // only need this to last as long as the method is running
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+            
             // service will be available when injected into account controller
             services.AddScoped<TokenService>();
 
