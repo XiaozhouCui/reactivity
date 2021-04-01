@@ -3,6 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
 import { format } from 'date-fns'
 import { store } from './store'
+import { Profile } from '../models/profile'
 
 export default class ActivityStore {
   // MobX Observables: class properties
@@ -95,7 +96,9 @@ export default class ActivityStore {
         (a) => a.username === user.username
       )
       activity.isHost = activity.hostUsername === user.username
-      activity.host = activity.attendees?.find(x => x.username === activity.hostUsername)
+      activity.host = activity.attendees?.find(
+        (x) => x.username === activity.hostUsername
+      )
     }
 
     activity.date = new Date(activity.date!)
@@ -164,6 +167,37 @@ export default class ActivityStore {
       runInAction(() => {
         this.loading = false
       })
+    }
+  }
+
+  // toggle attencance status
+  updateAttendance = async () => {
+    const user = store.userStore.user
+    this.loading = true
+    try {
+      await agent.Activities.attend(this.selectedActivity!.id)
+      runInAction(() => {
+        if (this.selectedActivity?.isGoing) {
+          // if user is quitting, then remove user from attendees list
+          this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(
+            (a) => a.username !== user?.username
+          )
+          this.selectedActivity.isGoing = false
+        } else {
+          // if a user is signning up, create a new profile for this user
+          // Instanciating Profile class will convert the object interface from User to Profile
+          const attendee = new Profile(user!)
+          this.selectedActivity?.attendees?.push(attendee)
+          this.selectedActivity!.isGoing = true
+        }
+        // update activityRegistry
+        this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!)
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      // FINALLY block: always turn off the loading flag no matter what happens
+      runInAction(() => (this.loading = false))
     }
   }
 }

@@ -79,10 +79,12 @@ const Activities = {
   // in details(), <T> is <Activity>
   details: (id: string) => requests.get<Activity>(`/activities/${id}`),
   // in following methods, <T> is <void>, meaning not return anything from request
-  create: (activity: Activity) => axios.post<void>('/activities', activity),
+  create: (activity: Activity) => requests.post<void>('/activities', activity),
   update: (activity: Activity) =>
-    axios.put<void>(`/activities/${activity.id}`, activity),
-  delete: (id: string) => axios.delete<void>(`/activities/${id}`),
+    requests.put<void>(`/activities/${activity.id}`, activity),
+  delete: (id: string) => requests.del<void>(`/activities/${id}`),
+  // attend activity: POST an empty object, and return viod
+  attend: (id: string) => requests.post<void>(`/activities/${id}/attend`, {})
 }
 
 const Account = {
