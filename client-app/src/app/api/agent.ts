@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
 import { history } from '../..'
 import { store } from '../stores/store'
-import { Activity } from '../models/activity'
+import { Activity, ActivityFormValues } from '../models/activity'
 import { User, UserFormValues } from '../models/user'
 
 const sleep = (delay: number) => {
@@ -79,8 +79,8 @@ const Activities = {
   // in details(), <T> is <Activity>
   details: (id: string) => requests.get<Activity>(`/activities/${id}`),
   // in following methods, <T> is <void>, meaning not return anything from request
-  create: (activity: Activity) => requests.post<void>('/activities', activity),
-  update: (activity: Activity) =>
+  create: (activity: ActivityFormValues) => requests.post<void>('/activities', activity),
+  update: (activity: ActivityFormValues) =>
     requests.put<void>(`/activities/${activity.id}`, activity),
   delete: (id: string) => requests.del<void>(`/activities/${id}`),
   // attend activity: POST an empty object, and return viod
