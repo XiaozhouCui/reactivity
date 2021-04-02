@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
 {
-    // this interface has nothing to do with database, only intaract with Cloudnary
+    // this interface has nothing to do with database, only intaract with Cloudinary
     public interface IPhotoAccessor
     {
         // IFormFile represents the file sent with the HTTP request

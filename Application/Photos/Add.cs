@@ -16,6 +16,7 @@ namespace Application.Photos
         // API returns the publicId and Url of photo
         public class Command : IRequest<Result<Photo>>
         {
+            // the form-data in POST request must be called "File" as below
             public IFormFile File { get; set; }
         }
 
