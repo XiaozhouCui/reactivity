@@ -43,6 +43,8 @@ namespace API.Extensions
             // Added UserAccessor class from Infrastructure as a service
             // then we can get the logged in user's username from anywhere in the application
             services.AddScoped<IUserAccessor, UserAccessor>();
+            // add PhotoAccessor as a service to interact with Cloudinary
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             // configure Cloudinary, referring to the appsettings.json (secret file)
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
