@@ -9,6 +9,7 @@ using Application.Core;
 using Application.Activities;
 using Application.Interfaces;
 using Infrastructure.Security;
+using Infrastructure.Photos;
 
 namespace API.Extensions
 {
@@ -42,6 +43,8 @@ namespace API.Extensions
             // Added UserAccessor class from Infrastructure as a service
             // then we can get the logged in user's username from anywhere in the application
             services.AddScoped<IUserAccessor, UserAccessor>();
+            // configure Cloudinary, referring to the appsettings.json (secret file)
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             return services;
         }

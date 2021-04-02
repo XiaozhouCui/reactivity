@@ -20,3 +20,8 @@
 ## Adding new property into Activity entity
 - When a new property is added into the Activity entity in Domain, need to run migration again
 - Goto solution folder and run migration `dotnet ef migrations add AddCancelledProperty -p Persistence -s API`
+
+## Integrate Cloudinary
+- Register a new account at Cloudinary for photo uploads
+- In NuGet, install CloudinaryDotNet SDK into Infrastructure project
+- In API project, edit `appsettings.json` to include CloudName, ApiKeys and ApiSecret for Cloudinary
