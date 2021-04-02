@@ -15,8 +15,11 @@ namespace Persistence
         // DbSet represents a table in db
         public DbSet<Activity> Activities { get; set; }
 
-        // To add many-to-many relationship, add a join table ActivityAttendees
+        // To add many-to-many relationship, add a join table named ActivityAttendees
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
+        // To query the photo collection directly, add a table named Photos
+        public DbSet<Photo> Photos { get; set; }
 
         // override the OnModelCreating method, to add additional configurations
         protected override void OnModelCreating(ModelBuilder builder)

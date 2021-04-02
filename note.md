@@ -25,3 +25,9 @@
 - Register a new account at Cloudinary for photo uploads
 - In NuGet, install CloudinaryDotNet SDK into Infrastructure project
 - In API project, edit `appsettings.json` to include CloudName, ApiKeys and ApiSecret for Cloudinary
+
+## Adding Photo entity and relate to AppUsers
+- Add Photo entity, and add Photos property in AppUsers, migration will auto add one-to-many relationship
+- Go back to root folder, run migration `dotnet ef migrations add PhotoEntityAdded -p Persistence -s API`
+- Once relationship is added, go to API project and run `dotnet watch run` to create new table
+- To check the new table in VS Code, quick open `SQLite: Open Database`, select the db file, then click the **SQLITE EXPLORER** in VS Code side bar on the left
