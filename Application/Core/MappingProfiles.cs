@@ -15,13 +15,16 @@ namespace Application.Core
             CreateMap<Activity, Activity>();
             // map Activity to ActivityDto, and configure properties
             CreateMap<Activity, ActivityDto>()
-                .ForMember(dest => dest.HostUsername, opt => opt.MapFrom(src => src.Attendees
+                .ForMember(dest => dest.HostUsername, options => options.MapFrom(src => src.Attendees
                     .FirstOrDefault(x => x.IsHost).AppUser.UserName));
             // map ActivityAttendee to Profile (self-defined Profile, not AutoMapper Profile)
             CreateMap<ActivityAttendee, Profiles.Profile>()
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.AppUser.DisplayName))
-                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.AppUser.UserName))
-                .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.AppUser.Bio));
+                .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.AppUser.DisplayName))
+                .ForMember(dest => dest.Username, options => options.MapFrom(src => src.AppUser.UserName))
+                .ForMember(dest => dest.Bio, options => options.MapFrom(src => src.AppUser.Bio));
+            // map AppUser to Profile to update image
+            CreateMap<AppUser, Profiles.Profile>()
+                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url));
         }
     }
 }
