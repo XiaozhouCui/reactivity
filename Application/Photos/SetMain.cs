@@ -40,7 +40,7 @@ namespace Application.Photos
                 // use LINQ to get the current Main photo synchronously
                 var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
 
-                // remove IsMaint tag from current main photo
+                // remove IsMain tag from current main photo
                 if (currentMain != null) currentMain.IsMain = false;
 
                 // set the reqested photo to main photo
