@@ -1,10 +1,11 @@
-import { User } from "./user";
+import { User } from './user'
 
 export interface Profile {
   username: string
   displayName: string
   image?: string
   bio?: string
+  photos?: Photo[]
 }
 
 // create a class, so that constructor can automatically set properties of the currently logged in user
@@ -15,4 +16,10 @@ export class Profile implements Profile {
     this.displayName = user.displayName
     this.image = user.image
   }
+}
+
+export interface Photo {
+  id: string
+  url: string
+  isMain: boolean
 }

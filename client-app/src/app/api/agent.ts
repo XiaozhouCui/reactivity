@@ -4,6 +4,7 @@ import { history } from '../..'
 import { store } from '../stores/store'
 import { Activity, ActivityFormValues } from '../models/activity'
 import { User, UserFormValues } from '../models/user'
+import { Profile } from '../models/profile'
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -63,7 +64,7 @@ axios.interceptors.response.use(
 )
 
 // Adding TYPE SAFETY for response: what type of data will be returned from api
-// use generic type <T> for responseBody, <T> can be <Activity>, <User>...
+// use generic type <T> for responseBody, <T> can be <Activity>, <User>, <Profile>...
 const responseBody = <T>(response: AxiosResponse<T>) => response.data
 
 const requests = {
@@ -94,6 +95,12 @@ const Account = {
     requests.post<User>('/account/register', user),
 }
 
-const agent = { Activities, Account }
+// object to get user's profile
+const Profiles = {
+  // get method returns a promise containing Profile
+  get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+}
+
+const agent = { Activities, Account, Profiles }
 
 export default agent
