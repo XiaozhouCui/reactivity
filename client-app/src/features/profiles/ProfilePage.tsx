@@ -18,13 +18,17 @@ const ProfilePage = () => {
     loadProfile(username)
   }, [loadProfile, username])
 
-  if (loadingProfile) return <LoadingComponent  content='Loading profile...'/>
+  if (loadingProfile) return <LoadingComponent content='Loading profile...' />
 
   return (
     <Grid>
       <Grid.Column width={16}>
-        {profile && <ProfileHeader profile={profile} />}
-        <ProfileContent />
+        {profile && (
+          <>
+            <ProfileHeader profile={profile} />
+            <ProfileContent profile={profile} />
+          </>
+        )}
       </Grid.Column>
     </Grid>
   )
