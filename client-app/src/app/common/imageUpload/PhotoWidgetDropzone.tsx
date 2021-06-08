@@ -24,7 +24,7 @@ const PhotoWidgetDropzone = ({ setFiles }: Props) => {
   }
 
   const onDrop = useCallback((acceptedFiles) => {
-    // Preview: store the image URL in file.preview
+    // Preview: store the image URL (blob in memory?) into property "file.preview"
     setFiles(acceptedFiles.map((file: any) => Object.assign(file, {
       preview: URL.createObjectURL(file)
     })))
