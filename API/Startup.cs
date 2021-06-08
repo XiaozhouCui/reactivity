@@ -21,6 +21,7 @@ namespace API
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // ConfigureServices is the Dependency Injection container, injectable services listed here
         public void ConfigureServices(IServiceCollection services)
         {
             // make the app aware of FluentValidation from NuGet

@@ -18,7 +18,7 @@ namespace API
     {
         public static async Task Main(string[] args)
         {
-            // create a db
+            // create a web server (Kestrel) on port 5000
             var host = CreateHostBuilder(args).Build();
             // using: scope will be disposed of after Main() method is finished
             using var scope = host.Services.CreateScope();

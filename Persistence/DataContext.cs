@@ -8,11 +8,12 @@ namespace Persistence
     // once installed, run a migration from root folder "dotnet ef migrations add IdentityAdded -p Persistence -s API"
     public class DataContext : IdentityDbContext<AppUser>
     {
+        // "base" is for parent class
         public DataContext(DbContextOptions options) : base(options)
         {
         }
 
-        // DbSet represents a table in db
+        // DbSet represents a table in db: Activities table
         public DbSet<Activity> Activities { get; set; }
 
         // To add many-to-many relationship, add a join table named ActivityAttendees
