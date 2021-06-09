@@ -4,7 +4,7 @@ import { history } from '../..'
 import { store } from '../stores/store'
 import { Activity, ActivityFormValues } from '../models/activity'
 import { User, UserFormValues } from '../models/user'
-import { Profile } from '../models/profile'
+import { Photo, Profile } from '../models/profile'
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -98,7 +98,17 @@ const Account = {
 // object to get user's profile
 const Profiles = {
   // get method returns a promise containing Profile
-  get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+  get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+  // upload photo to API
+  uploadPhoto: (file: Blob) => {
+    let formData = new FormData()
+    // 'File' needs to match the name of the property in API
+    formData.append('File', file)
+    // post request shall return a type of Photo from API
+    return axios.post<Photo>('photos', formData, {
+      headers: { 'Content-type': 'multipart/form-data' }
+    })
+  }
 }
 
 const agent = { Activities, Account, Profiles }
