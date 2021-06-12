@@ -45,7 +45,7 @@ namespace Application.Profiles
                 user.Bio = request.Bio ?? user.Bio;
                 user.DisplayName = request.DisplayName ?? user.DisplayName;
                 
-                // by default if we send the same profile data it will fail
+                // by default if we send the same request data again it will fail with 400
                 // we can accept the same data coming in and tell EF the entity has been modified even if it has not
                 _context.Entry(user).State = EntityState.Modified;
 

@@ -66,8 +66,8 @@ export default class ProfileStore {
       store.userStore.setImage(photo.url)
       runInAction(() => {
         if (this.profile && this.profile.photos) {
-          this.profile.photos.find(p => p.isMain)!.isMain = false
-          this.profile.photos.find(p => p.id === photo.id)!.isMain = true
+          this.profile.photos.find((p) => p.isMain)!.isMain = false
+          this.profile.photos.find((p) => p.id === photo.id)!.isMain = true
           this.profile.image = photo.url
           this.loading = false
         }
@@ -85,13 +85,37 @@ export default class ProfileStore {
       runInAction(() => {
         if (this.profile) {
           // remove the photo from profile
-          this.profile.photos = this.profile.photos?.filter(p => p.id !== photo.id)
+          this.profile.photos = this.profile.photos?.filter(
+            (p) => p.id !== photo.id
+          )
           this.loading = false
         }
       })
     } catch (error) {
       console.log(error)
-      runInAction(() => this.loading = false)
+      runInAction(() => (this.loading = false))
+    }
+  }
+
+  // Partial<Profile>: only update 2 of the properties in Profile type
+  updateProfile = async (profile: Partial<Profile>) => {
+    this.loading = true
+    try {
+      await agent.Profiles.updateProfile(profile)
+      runInAction(() => {
+        if (
+          profile.displayName &&
+          profile.displayName !== store.userStore.user?.displayName
+        ) {
+          store.userStore.setDisplayName(profile.displayName)
+        }
+        // overwrite the existing profile with the Partial profile passed in
+        this.profile = { ...this.profile, ...(profile as Profile) } // "as Profile" to make TypeScript happy
+        this.loading = false
+      })
+    } catch (error) {
+      console.log(error)
+      runInAction(() => (this.loading = false))
     }
   }
 }
