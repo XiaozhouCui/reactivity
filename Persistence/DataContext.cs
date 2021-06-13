@@ -22,6 +22,9 @@ namespace Persistence
         // To query the photo collection directly, add a table named Photos
         public DbSet<Photo> Photos { get; set; }
 
+        // Query Comments directly
+        public DbSet<Comment> Comments { get; set; }
+
         // override the OnModelCreating method, to add additional configurations
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -39,6 +42,12 @@ namespace Persistence
                 .HasOne(u => u.Activity)
                 .WithMany(a => a.Attendees)
                 .HasForeignKey(aa => aa.ActivityId);
+            // delete activity will also delete comments (cascade)
+            builder.Entity<Comment>()
+                .HasOne(a => a.Activity)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
+            // once updated, run migration: dotnet ef migrations add CommentEntityAdded -p Persistence -s API
         }
     }
 }

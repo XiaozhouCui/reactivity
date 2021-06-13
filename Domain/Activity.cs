@@ -15,5 +15,6 @@ namespace Domain
         public string Venue { get; set; }
         public bool IsCancelled { get; set; } // host can cancel this activity
         public ICollection<ActivityAttendee> Attendees { get; set; } = new List<ActivityAttendee>(); // initialise "attendees" property in Activity
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>(); // initial Comments to add relationship to comments
     }
 }
