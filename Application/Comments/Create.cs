@@ -29,7 +29,7 @@ namespace Application.Comments
                 RuleFor(x => x.Body).NotEmpty();
             }
         }
-        // create handler, implement IRequestHandler interface
+        // Create handler, implement IRequestHandler interface, pass in Command as type
         public class Handler : IRequestHandler<Command, Result<CommentDto>>
         {
             // inject DataContext (from Persistence) to update db with the new comments
