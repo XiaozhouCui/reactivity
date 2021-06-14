@@ -47,6 +47,8 @@ namespace API.Extensions
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             // configure Cloudinary, referring to the appsettings.json (secret file)
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+            // add SignalR as a service, to handle comments in real-time
+            services.AddSignalR();
 
             return services;
         }

@@ -9,6 +9,7 @@ using Application.Activities;
 using API.Middleware;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using API.SignalR;
 
 namespace API
 {
@@ -68,7 +69,10 @@ namespace API
 
             app.UseEndpoints(endpoints =>
             {
+                // add API controller endpoints
                 endpoints.MapControllers();
+                // Instead of API controllers, we use SignalR Hubs as endpoints for client
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
