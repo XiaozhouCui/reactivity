@@ -41,7 +41,7 @@ namespace API.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
-                    // SignalR doesn't use HTTP and doesn't have have a auth header
+                    // SignalR uses web socket and doesn't have have an HTTP auth header
                     opt.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
