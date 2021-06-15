@@ -26,14 +26,17 @@ namespace API.Extensions
             services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
-
             });
             // add CORS header
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                    policy
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials() // allow connection to SignalR hub
+                        .WithOrigins("http://localhost:3000");
                 });
             });
             // add Mediator
