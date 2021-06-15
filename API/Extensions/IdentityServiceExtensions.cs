@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using API.Services;
 using Domain;
 using Infrastructure.Security;
@@ -17,7 +18,7 @@ namespace API.Extensions
         // AddIdentityServices: configure Identity to be added in Startup class
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddIdentityCore<AppUser>(opt => 
+            services.AddIdentityCore<AppUser>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;
             })
@@ -40,13 +41,30 @@ namespace API.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+                    // SignalR doesn't use HTTP and doesn't have have a auth header
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            // SignalR on client side will pass the jwt in query string "access_token"
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            // "/chat" is the endpoint for SignalR Hub
+                            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat")))
+                            {
+                                // store token into context
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
-            
+
             // only the host can modify activity details (to be added in controller as middleware before HttpPut)
-            services.AddAuthorization(opt => 
+            services.AddAuthorization(opt =>
             {
                 // add auth policy "IsActivityHost"
-                opt.AddPolicy("IsActivityHost", policy => 
+                opt.AddPolicy("IsActivityHost", policy =>
                 {
                     // add the newly created class IsHostRequirement as requirement
                     policy.Requirements.Add(new IsHostRequirement());
@@ -55,7 +73,7 @@ namespace API.Extensions
 
             // only need this to last as long as the method is running
             services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
-            
+
             // service will be available when injected into account controller
             services.AddScoped<TokenService>();
 
