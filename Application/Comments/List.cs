@@ -40,7 +40,7 @@ namespace Application.Comments
                 // get a list of comments from db for a particular activity, order by creation date, map to CommentDto
                 var comments = await _context.Comments
                     .Where(x => x.Activity.Id == request.ActivityId) // Linq
-                    .OrderBy(x => x.CreatedAt) // Linq
+                    .OrderByDescending(x => x.CreatedAt) // Linq, latest comment at the top
                     .ProjectTo<CommentDto>(_mapper.ConfigurationProvider) // AutoMapper
                     .ToListAsync(); // EntityFrameworkCore
 

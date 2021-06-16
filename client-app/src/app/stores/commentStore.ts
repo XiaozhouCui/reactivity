@@ -38,14 +38,25 @@ export default class CommentStore {
       // method name "LoadComments" needs to match exactly in SignalR (ChatHub.cs)
       this.hubConnection.on('LoadComments', (comments: ChatComment[]) => {
         // update observable inside our store
-        runInAction(() => (this.comments = comments))
+        runInAction(() => {
+          // convert the ISOString to Date object
+          comments.forEach((comment) => {
+            // 'Z' at the end of ISO String means UTC time
+            comment.createdAt = new Date(comment.createdAt + 'Z')
+          })
+          this.comments = comments
+        })
       })
 
       // when a new comment is received, update observable inside store
       // method name "ReceiveComment" needs to match exactly in SignalR (ChatHub.cs)
       this.hubConnection.on('ReceiveComment', (comment: ChatComment) => {
         // push new comment to store
-        runInAction(() => this.comments.push(comment))
+        runInAction(() => {
+          comment.createdAt = new Date(comment.createdAt)
+          // unshift: place the new comment at the start of the array, latest comment at the top
+          this.comments.unshift(comment)
+        })
       })
     }
   }
