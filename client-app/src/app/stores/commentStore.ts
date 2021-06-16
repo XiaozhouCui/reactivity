@@ -62,4 +62,16 @@ export default class CommentStore {
     this.comments = []
     this.stopHubConnection()
   }
+
+  // add new comment
+  addComment = async (values: any) => {
+    values.activityId = store.activityStore.selectedActivity?.id
+    try {
+      // invoke the 'SendComment' method inside ChatHub.cs
+      await this.hubConnection?.invoke('SendComment', values)
+      // then on 'ReceiveComment', all connected users will get new comment back from server and push it to this.comments array
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
