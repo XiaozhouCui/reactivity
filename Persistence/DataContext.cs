@@ -24,6 +24,7 @@ namespace Persistence
 
         // Query Comments directly
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserFollowing> UserFollowings { get; set; }
 
         // override the OnModelCreating method, to add additional configurations
         protected override void OnModelCreating(ModelBuilder builder)
@@ -48,6 +49,25 @@ namespace Persistence
                 .WithMany(c => c.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
             // once updated, run migration: dotnet ef migrations add CommentEntityAdded -p Persistence -s API
+
+            // setup relationship for followers
+            builder.Entity<UserFollowing>(b =>
+            {
+                // "b" is the builder action
+                // set primary key for UserFollowing table
+                b.HasKey(k => new { k.ObserverId, k.TargetId });
+                // one side of relationship
+                b.HasOne(o => o.Observer)
+                    .WithMany(f => f.Followings)
+                    .HasForeignKey(o => o.ObserverId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                // the other side of relationship
+                b.HasOne(o => o.Target)
+                    .WithMany(f => f.Followers)
+                    .HasForeignKey(o => o.TargetId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                // run migration: dotnet ef migrations add FollowingEntityAdded -p Persistence -s API
+            });
         }
     }
 }
