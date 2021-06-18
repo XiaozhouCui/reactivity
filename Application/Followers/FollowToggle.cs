@@ -57,7 +57,7 @@ namespace Application.Followers
                 }
                 // persist to db
                 var success = await _context.SaveChangesAsync() > 0;
-                // if succeed, return success
+                // if succeed, return 200
                 if (success) return Result<Unit>.Success(Unit.Value);
                 // if failes
                 return Result<Unit>.Failure("Failed to updaate following");

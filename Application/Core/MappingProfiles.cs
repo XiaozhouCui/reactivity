@@ -24,9 +24,11 @@ namespace Application.Core
                 .ForMember(dest => dest.Username, options => options.MapFrom(src => src.AppUser.UserName))
                 .ForMember(dest => dest.Bio, options => options.MapFrom(src => src.AppUser.Bio))
                 .ForMember(dest => dest.Image, options => options.MapFrom(source => source.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url));
-            // map AppUser to Profile (self-defined Profile, not AutoMapper Profile) to update image
+            // map AppUser to Profile (self-defined Profile, not AutoMapper Profile) to update image, and following
             CreateMap<AppUser, Profiles.Profile>()
-                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url));
+                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(dest => dest.FollowersCount, options => options.MapFrom(source => source.Followers.Count))
+                .ForMember(dest => dest.FollowingCount, options => options.MapFrom(source => source.Followings.Count));
             // map from comment to commentDTO
             CreateMap<Comment, CommentDto>()                
                 .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.Author.DisplayName))
