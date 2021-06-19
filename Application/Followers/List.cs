@@ -45,14 +45,15 @@ namespace Application.Followers
                             .Where(x => x.Target.UserName == request.Username) // Linq
                             .Select(u => u.Observer) // select only observers, not targets
                             .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider,
-                                new { currentUsername = _userAccessor.GetUsername() }) // AutoMapper, pass username to configuration
+                                new { currentUsername = _userAccessor.GetUsername() }) // pass username to configuration
                             .ToListAsync(); // Entity Framework
                         break;
                     case "following": // a list of targets in UserFollowings table whose observer username is {xxx}
                         profiles = await _context.UserFollowings
                             .Where(x => x.Observer.UserName == request.Username) // Linq
                             .Select(u => u.Target) // select only observers, not targets
-                            .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider) // AutoMapper
+                            .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider,
+                                new { currentUsername = _userAccessor.GetUsername() }) // pass username to configuration
                             .ToListAsync(); // Entity Framework
                         break;
                 }

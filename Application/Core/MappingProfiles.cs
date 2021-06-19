@@ -18,25 +18,28 @@ namespace Application.Core
             CreateMap<Activity, Activity>();
             // map Activity to ActivityDto, and configure properties
             CreateMap<Activity, ActivityDto>()
-                .ForMember(dest => dest.HostUsername, options => options.MapFrom(src => src.Attendees
+                .ForMember(dest => dest.HostUsername, options => options.MapFrom(source => source.Attendees
                     .FirstOrDefault(x => x.IsHost).AppUser.UserName));
             // map ActivityAttendee to AttendeeDto
             CreateMap<ActivityAttendee, AttendeeDto>()
-                .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.AppUser.DisplayName))
-                .ForMember(dest => dest.Username, options => options.MapFrom(src => src.AppUser.UserName))
-                .ForMember(dest => dest.Bio, options => options.MapFrom(src => src.AppUser.Bio))
-                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url));
+                .ForMember(dest => dest.DisplayName, options => options.MapFrom(source => source.AppUser.DisplayName))
+                .ForMember(dest => dest.Username, options => options.MapFrom(source => source.AppUser.UserName))
+                .ForMember(dest => dest.Bio, options => options.MapFrom(source => source.AppUser.Bio))
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.AppUser.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.AppUser.Followings.Count))
+                .ForMember(d => d.Following, o => o.MapFrom(s => s.AppUser.Followers.Any(x => x.Observer.UserName == currentUsername)));
             // map AppUser to Profile (self-defined Profile, not AutoMapper Profile) to update image, and following
             CreateMap<AppUser, Profiles.Profile>()
-                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url))
-                .ForMember(dest => dest.FollowersCount, options => options.MapFrom(source => source.Followers.Count))
-                .ForMember(dest => dest.FollowingCount, options => options.MapFrom(source => source.Followings.Count))
-                .ForMember(dest => dest.Following, options => options.MapFrom(source => source.Followers.Any(x => x.Observer.UserName == currentUsername)));
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count))
+                .ForMember(d => d.Following, o => o.MapFrom(s => s.Followers.Any(x => x.Observer.UserName == currentUsername)));
             // map from comment to commentDTO
             CreateMap<Comment, CommentDto>()
-                .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.Author.DisplayName))
-                .ForMember(dest => dest.Username, options => options.MapFrom(src => src.Author.UserName))
-                .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Author.Photos.FirstOrDefault(x => x.IsMain).Url));
+                .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DisplayName))
+                .ForMember(d => d.Username, o => o.MapFrom(s => s.Author.UserName))
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.Author.Photos.FirstOrDefault(x => x.IsMain).Url));
         }
     }
 }

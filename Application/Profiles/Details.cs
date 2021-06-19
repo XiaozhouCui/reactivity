@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -23,10 +24,13 @@ namespace Application.Profiles
         {
             // inject DataContext to access database
             // inject IMapper to map user obj to profile obj
+            // inject IUserAccessor to get current username, pass to configuration for the following flag
             private readonly DataContext _context; // initialise field from parameter
             private readonly IMapper _mapper; // initialise field from parameter
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
             }
@@ -36,7 +40,8 @@ namespace Application.Profiles
             {
                 // include user's photos using ProjectTo from AutoMapper.QueryableExtensions to project user to profile
                 var user = await _context.Users
-                    .ProjectTo<Profile>(_mapper.ConfigurationProvider)
+                    .ProjectTo<Profile>(_mapper.ConfigurationProvider, 
+                        new {currentUsername = _userAccessor.GetUsername()})
                     .SingleOrDefaultAsync(x => x.Username == request.Username);
 
                 if (user == null) return null;

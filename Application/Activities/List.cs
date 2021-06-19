@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -21,11 +21,13 @@ namespace Application.Activities
         // req: Query, res: a list of ActivityDTO
         public class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
         {
-            // inject DataContext and IMapper into constructor
+            // inject DataContext, IMapper and IUserAccessor into constructor
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 // context is the database
                 _context = context;
@@ -33,7 +35,7 @@ namespace Application.Activities
             // Handle is an async method
             public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                /*========== EAGLY LOADING RELATED DATA ==========*/
+                /*========== EAGERLY LOADING RELATED DATA ==========*/
 
                 // // Eagerly loading related data: explicitly include Attendees and AppUser
                 // var activities = await _context.Activities
@@ -50,7 +52,8 @@ namespace Application.Activities
 
                 // Projection comes from AutoMapper QueryableExtensions, it makes SQL query much cleaner
                 var activities = await _context.Activities
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, 
+                        new {currentUsername = _userAccessor.GetUsername()})
                     .ToListAsync();
 
                 return Result<List<ActivityDto>>.Success(activities);
