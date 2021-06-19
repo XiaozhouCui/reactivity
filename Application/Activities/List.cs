@@ -18,7 +18,7 @@ namespace Application.Activities
         // use pre-shaped ActivityDto to replace Activity class in the list, to avoid "object cycle"
         public class Query : IRequest<Result<List<ActivityDto>>> { }
 
-        // Pass Query into Handler and return a list of Activities
+        // req: Query, res: a list of ActivityDTO
         public class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
         {
             // inject DataContext and IMapper into constructor

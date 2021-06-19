@@ -17,6 +17,7 @@ namespace Application.Followers
             public string TargetUsername { get; set; }
         }
 
+        // req: Command, res: nothing
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;

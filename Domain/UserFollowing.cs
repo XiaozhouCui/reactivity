@@ -1,6 +1,7 @@
 namespace Domain
 {
     // self-referencing many-to-many relationship: a join table
+    // only 2 columns (also primary keys) in UserFollowings table: ObserverId & TargetId
     public class UserFollowing
     {
         public string ObserverId { get; set; }
