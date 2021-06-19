@@ -12,6 +12,8 @@ namespace Application.Core
         // auto mapper will be added as a service in Startup.cs
         public MappingProfiles()
         {
+            // pass currentUsername as ProjectTo() parameter to configuration in List?
+            string currentUsername = null;
             // where we map from, and where to map to
             CreateMap<Activity, Activity>();
             // map Activity to ActivityDto, and configure properties
@@ -28,13 +30,13 @@ namespace Application.Core
             CreateMap<AppUser, Profiles.Profile>()
                 .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url))
                 .ForMember(dest => dest.FollowersCount, options => options.MapFrom(source => source.Followers.Count))
-                .ForMember(dest => dest.FollowingCount, options => options.MapFrom(source => source.Followings.Count));
+                .ForMember(dest => dest.FollowingCount, options => options.MapFrom(source => source.Followings.Count))
+                .ForMember(dest => dest.Following, options => options.MapFrom(source => source.Followers.Any(x => x.Observer.UserName == currentUsername)));
             // map from comment to commentDTO
-            CreateMap<Comment, CommentDto>()                
+            CreateMap<Comment, CommentDto>()
                 .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.Author.DisplayName))
                 .ForMember(dest => dest.Username, options => options.MapFrom(src => src.Author.UserName))
                 .ForMember(dest => dest.Image, options => options.MapFrom(source => source.Author.Photos.FirstOrDefault(x => x.IsMain).Url));
-
         }
     }
 }

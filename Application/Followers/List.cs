@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -24,8 +25,10 @@ namespace Application.Followers
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
             }
@@ -41,7 +44,8 @@ namespace Application.Followers
                         profiles = await _context.UserFollowings
                             .Where(x => x.Target.UserName == request.Username) // Linq
                             .Select(u => u.Observer) // select only observers, not targets
-                            .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider) // AutoMapper
+                            .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider,
+                                new { currentUsername = _userAccessor.GetUsername() }) // AutoMapper, pass username to configuration
                             .ToListAsync(); // Entity Framework
                         break;
                     case "following": // a list of targets in UserFollowings table whose observer username is {xxx}
