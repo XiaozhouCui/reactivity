@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react-lite'
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { Image, List, Popup } from 'semantic-ui-react'
 import { Profile } from '../../../app/models/profile'
@@ -13,7 +12,7 @@ const ActivityListItemAttendee = ({ attendees }: Props) => {
   // add a orange circular bordere around the following attendee's image
   const styles = {
     borderColor: 'orange',
-    borderWidth: 2,
+    borderWidth: 3,
   }
 
   return (
