@@ -113,6 +113,7 @@ const Profiles = {
   deletePhoto: (id: string) => requests.del(`/photos/${id}`),
   // Note the use of Partial<Profile> as we are only allowing the user to update 2 of the properties contained in the Profile type.
   updateProfile: (profile: Partial<Profile>) => requests.put(`/profiles`, profile),
+  updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
 }
 
 const agent = { Activities, Account, Profiles }

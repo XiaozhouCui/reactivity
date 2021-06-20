@@ -8,6 +8,7 @@ export default class ProfileStore {
   loadingProfile = false
   uploading = false
   loading = false
+  followings: Profile[] = []
 
   constructor() {
     makeAutoObservable(this)
@@ -116,6 +117,36 @@ export default class ProfileStore {
     } catch (error) {
       console.log(error)
       runInAction(() => (this.loading = false))
+    }
+  }
+
+  // toggle following status
+  updateFollowing = async (username: string, following: boolean) => {
+    this.loading = true
+    try {
+      // send post request to toggle following status
+      await agent.Profiles.updateFollowing(username)
+      // update attendee
+      store.activityStore.updateAttendeeFollowing(username)
+      runInAction(() => {
+        if (this.profile && this.profile.username !== store.userStore.user?.username) {
+          // if follow btn clicked, increase follower by one; if unfollow clicked, decrease follower by one
+          following ? this.profile.followersCount++ : this.profile.followersCount--
+          this.profile.following = !this.profile.following
+        }
+        this.followings.forEach(profile => {
+          if (profile.username === username) {
+            // profile.following is what the following status currently is
+            // if already following, decreaase followersCount by one; otherwise increase by one
+            profile.following ? profile.followersCount-- : profile.followersCount++
+            profile.following = !profile.following
+          }
+        })
+        this.loading = false
+      })
+    } catch (error) {
+      console.log(error)
+      runInAction(() => this.loading = false)
     }
   }
 }

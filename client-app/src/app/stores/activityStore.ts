@@ -141,7 +141,10 @@ export default class ActivityStore {
       await agent.Activities.update(activity)
       runInAction(() => {
         if (activity.id) {
-          let updatedActivity = {...this.getActivity(activity.id), ...activity}
+          let updatedActivity = {
+            ...this.getActivity(activity.id),
+            ...activity,
+          }
           this.activityRegistry.set(activity.id, updatedActivity as Activity)
           this.selectedActivity = updatedActivity as Activity
         }
@@ -176,9 +179,10 @@ export default class ActivityStore {
       runInAction(() => {
         if (this.selectedActivity?.isGoing) {
           // if user is quitting, then remove user from attendees list
-          this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(
-            (a) => a.username !== user?.username
-          )
+          this.selectedActivity.attendees =
+            this.selectedActivity.attendees?.filter(
+              (a) => a.username !== user?.username
+            )
           this.selectedActivity.isGoing = false
         } else {
           // if a user is signning up, create a new profile for this user
@@ -188,7 +192,10 @@ export default class ActivityStore {
           this.selectedActivity!.isGoing = true
         }
         // update activityRegistry
-        this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!)
+        this.activityRegistry.set(
+          this.selectedActivity!.id,
+          this.selectedActivity!
+        )
       })
     } catch (error) {
       console.log(error)
@@ -205,16 +212,35 @@ export default class ActivityStore {
       await agent.Activities.attend(this.selectedActivity!.id)
       runInAction(() => {
         this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled
-        this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!)
+        this.activityRegistry.set(
+          this.selectedActivity!.id,
+          this.selectedActivity!
+        )
       })
     } catch (error) {
       console.log(error)
     } finally {
-      runInAction(() => this.loading = false)
+      runInAction(() => (this.loading = false))
     }
   }
 
   clearSelectedActivity = () => {
     this.selectedActivity = undefined
+  }
+
+  updateAttendeeFollowing = (username: string) => {
+    // loop over all attendees in each activity
+    this.activityRegistry.forEach((activity) => {
+      activity.attendees.forEach((attendee) => {
+        if (attendee.username === username) {
+          // if already following, decrease followers count by one, otherwise increase by one
+          attendee.following
+            ? attendee.followersCount--
+            : attendee.followersCount++
+          // toggle following status
+          attendee.following = !attendee.following
+        }
+      })
+    })
   }
 }
