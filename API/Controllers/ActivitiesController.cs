@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Application.Activities;
+using Application.Core;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,11 @@ namespace API.Controllers
     {
         // endpoint to get a list of activities
         [HttpGet]
-        public async Task<IActionResult> GetActivities()
+        public async Task<IActionResult> GetActivities([FromQuery]PagingParams param) // get pagination parameters from query string
         {
             // get response from mediator, initiate an instance of List in Activities
             // Mediator is the protected property in parent class BaseApiController
-            var result = await Mediator.Send(new List.Query());
+            var result = await Mediator.Send(new List.Query{Params = param});
             // call HandleResult method from BaseApiController for Error Handling (404, 400 etc.)
             return HandleResult(result);
             // return await _context.Activities.ToListAsync();

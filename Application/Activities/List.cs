@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
@@ -16,10 +17,13 @@ namespace Application.Activities
     {
         // Query class will return a list of Activities as the generic type of Result class
         // use pre-shaped ActivityDto to replace Activity class in the list, to avoid "object cycle"
-        public class Query : IRequest<Result<List<ActivityDto>>> { }
+        public class Query : IRequest<Result<PagedList<ActivityDto>>>
+        {
+            public PagingParams Params { get; set; }
+        }
 
-        // req: Query, res: a list of ActivityDTO
-        public class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
+        // req: Query, res: a (paginated) list of ActivityDTO
+        public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDto>>>
         {
             // inject DataContext, IMapper and IUserAccessor into constructor
             private readonly DataContext _context;
@@ -33,7 +37,7 @@ namespace Application.Activities
                 _context = context;
             }
             // Handle is an async method
-            public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PagedList<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 /*========== EAGERLY LOADING RELATED DATA ==========*/
 
@@ -51,12 +55,16 @@ namespace Application.Activities
                 /*========== USE PROJECTION TO LOAD RELATED DATA ==========*/
 
                 // Projection comes from AutoMapper QueryableExtensions, it makes SQL query much cleaner
-                var activities = await _context.Activities
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, 
-                        new {currentUsername = _userAccessor.GetUsername()})
-                    .ToListAsync();
+                var query = _context.Activities
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider,
+                        new { currentUsername = _userAccessor.GetUsername() })
+                    // .ToListAsync(cancellationToken);
+                    .AsQueryable(); // defer the query execution, not async/await anymore
 
-                return Result<List<ActivityDto>>.Success(activities);
+                return Result<PagedList<ActivityDto>>.Success(
+                    // directly call the static method CreateAsync() from PagedList class
+                    await PagedList<ActivityDto>.CreateAsync(query, request.Params.PageNumber, request.Params.PageSize)
+                );
             }
         }
     }
