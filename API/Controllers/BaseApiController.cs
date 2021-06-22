@@ -1,3 +1,4 @@
+using API.Extensions;
 using Application.Core;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace API.Controllers
         // ??= means if _mediator is null, use the right hand side expression
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices
             .GetService<IMediator>();
-        
+
         // method HandleResult will return ActionResult, passing in Result of type <T> as parameter (result from Mediator.Send())
         protected ActionResult HandleResult<T>(Result<T> result)
         {
@@ -24,6 +25,22 @@ namespace API.Controllers
             if (result == null) return NotFound(); // for item not found in db before edit/delete
             if (result.IsSuccess && result.Value != null)
                 return Ok(result.Value);
+            if (result.IsSuccess && result.Value == null)
+                return NotFound();
+            return BadRequest(result.Error);
+        }
+
+        // paginated result
+        protected ActionResult HandlePagedResult<T>(Result<PagedList<T>> result)
+        {
+            // Error handling: 404, 400 etc.
+            if (result == null) return NotFound(); // for item not found in db before edit/delete
+            if (result.IsSuccess && result.Value != null)
+            {
+                // add "Pagination" header using HttpExtensions.cs
+                Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, result.Value.TotalCount, result.Value.TotalPages);
+                return Ok(result.Value);
+            }
             if (result.IsSuccess && result.Value == null)
                 return NotFound();
             return BadRequest(result.Error);

@@ -56,6 +56,7 @@ namespace Application.Activities
 
                 // Projection comes from AutoMapper QueryableExtensions, it makes SQL query much cleaner
                 var query = _context.Activities
+                    .OrderBy(d => d.Date)
                     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider,
                         new { currentUsername = _userAccessor.GetUsername() })
                     // .ToListAsync(cancellationToken);

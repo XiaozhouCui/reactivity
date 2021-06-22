@@ -17,8 +17,8 @@ namespace API.Controllers
             // get response from mediator, initiate an instance of List in Activities
             // Mediator is the protected property in parent class BaseApiController
             var result = await Mediator.Send(new List.Query{Params = param});
-            // call HandleResult method from BaseApiController for Error Handling (404, 400 etc.)
-            return HandleResult(result);
+            // call HandlePagedResult method from BaseApiController for Error Handling (404, 400 etc.)
+            return HandlePagedResult(result);
             // return await _context.Activities.ToListAsync();
         }
 
