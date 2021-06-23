@@ -1,3 +1,4 @@
+import { PaginatedResult } from './../models/pagination';
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
 import { history } from '../..'
@@ -21,8 +22,17 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(
+  // interogate the response
   async (response) => {
     await sleep(500)
+    // access the pagination header (a json string)
+    const pagination = response.headers['pagination']
+    if (pagination) {
+      response.data = new PaginatedResult(response.data, JSON.parse(pagination))
+      // "any" can be activity
+      return response as AxiosResponse<PaginatedResult<any>>
+    }
+    // if no pagination header, then it is a normal response
     return response
   },
   (error: AxiosError) => {
@@ -76,7 +86,7 @@ const requests = {
 
 const Activities = {
   // in list(), <T> is <Activity[]>
-  list: () => requests.get<Activity[]>('/activities'),
+  list: () => requests.get<PaginatedResult<Activity[]>>('/activities'),
   // in details(), <T> is <Activity>
   details: (id: string) => requests.get<Activity>(`/activities/${id}`),
   // in following methods, <T> is <void>, meaning not return anything from request

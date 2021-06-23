@@ -1,3 +1,4 @@
+import { Pagination } from '../models/pagination';
 import { Activity, ActivityFormValues } from './../models/activity'
 import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
@@ -12,6 +13,7 @@ export default class ActivityStore {
   editMode = false
   loading = false
   loadingInitial = false
+  pagination: Pagination | null = null
 
   constructor() {
     // makeAutoObservable will auto convert class properties into MobX Observables, and methods into MobX Actions
@@ -50,16 +52,22 @@ export default class ActivityStore {
   loadActivities = async () => {
     this.loadingInitial = true
     try {
-      const activities = await agent.Activities.list()
-      activities.forEach((activity) => {
+      const result = await agent.Activities.list()
+      result.data.forEach((activity) => {
         // arrow function auto-bind to "this" class
         this.setActivity(activity)
       })
+      this.setPagination(result.pagination)
       this.setLoadingInitial(false)
     } catch (error) {
       console.log(error)
       this.setLoadingInitial(false)
     }
+  }
+
+  // helper method to set pagination when loading activities
+  setPagination = (pagination: Pagination) => {
+    this.pagination = pagination
   }
 
   // only MobX Action can change state
