@@ -1,4 +1,4 @@
-import { Pagination } from '../models/pagination';
+import { Pagination, PagingParams } from '../models/pagination';
 import { Activity, ActivityFormValues } from './../models/activity'
 import { makeAutoObservable, runInAction } from 'mobx'
 import agent from '../api/agent'
@@ -14,6 +14,7 @@ export default class ActivityStore {
   loading = false
   loadingInitial = false
   pagination: Pagination | null = null
+  pagingParams = new PagingParams()
 
   constructor() {
     // makeAutoObservable will auto convert class properties into MobX Observables, and methods into MobX Actions
@@ -22,6 +23,19 @@ export default class ActivityStore {
     //   title: observable,
     //   setTitle: action
     // })
+  }
+
+  setPagingParams = (pagingParams: PagingParams) => {
+    this.pagingParams = pagingParams
+  }
+
+  // computed property for axios query parameters
+  get axiosParams() {
+    // '/api/activities?pageNumber=1&pageSize=2'
+    const params = new URLSearchParams()
+    params.append('pageNumber', this.pagingParams.pageNumber.toString())
+    params.append('pageSize', this.pagingParams.pageSize.toString())
+    return params
   }
 
   // computed function as getter
@@ -52,7 +66,7 @@ export default class ActivityStore {
   loadActivities = async () => {
     this.loadingInitial = true
     try {
-      const result = await agent.Activities.list()
+      const result = await agent.Activities.list(this.axiosParams)
       result.data.forEach((activity) => {
         // arrow function auto-bind to "this" class
         this.setActivity(activity)

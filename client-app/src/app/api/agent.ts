@@ -86,7 +86,7 @@ const requests = {
 
 const Activities = {
   // in list(), <T> is <Activity[]>
-  list: () => requests.get<PaginatedResult<Activity[]>>('/activities'),
+  list: (params: URLSearchParams) => axios.get<PaginatedResult<Activity[]>>('/activities', {params}).then(responseBody),
   // in details(), <T> is <Activity>
   details: (id: string) => requests.get<Activity>(`/activities/${id}`),
   // in following methods, <T> is <void>, meaning not return anything from request
