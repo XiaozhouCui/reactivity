@@ -1,6 +1,6 @@
 import { Pagination, PagingParams } from '../models/pagination';
 import { Activity, ActivityFormValues } from './../models/activity'
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import agent from '../api/agent'
 import { format } from 'date-fns'
 import { store } from './store'
@@ -15,6 +15,7 @@ export default class ActivityStore {
   loadingInitial = false
   pagination: Pagination | null = null
   pagingParams = new PagingParams()
+  predicate = new Map().set('all', true) // query param filters: all, startDate, isGogin, isHost; show all activities by default
 
   constructor() {
     // makeAutoObservable will auto convert class properties into MobX Observables, and methods into MobX Actions
@@ -23,10 +24,45 @@ export default class ActivityStore {
     //   title: observable,
     //   setTitle: action
     // })
+
+    // force the page to react to change in predicate (query param filters)
+    reaction(
+      () => this.predicate.keys(),
+      () => {
+        this.pagingParams = new PagingParams()
+        this.activityRegistry.clear()
+        this.loadActivities() // this takes axiosParams
+      }
+    )
   }
 
   setPagingParams = (pagingParams: PagingParams) => {
     this.pagingParams = pagingParams
+  }
+
+  setPredicate = (predicate: string, value: string | Date) => {
+    const resetPredicate = () => {
+      this.predicate.forEach((value, key) => {
+        if (key !== 'startDate') this.predicate.delete(key)
+      })
+    }
+    switch (predicate) {
+      case 'all':
+        resetPredicate()
+        this.predicate.set('all', true)
+        break
+      case 'isGoing':
+        resetPredicate()
+        this.predicate.set('isGoing', true)
+        break
+      case 'isHost':
+        resetPredicate()
+        this.predicate.set('isHost', true)
+        break
+      case 'startDate':
+        this.predicate.delete('startDate') // delete key to trigger page reaction
+        this.predicate.set('startDate', value)
+    }
   }
 
   // computed property for axios query parameters
@@ -35,6 +71,15 @@ export default class ActivityStore {
     const params = new URLSearchParams()
     params.append('pageNumber', this.pagingParams.pageNumber.toString())
     params.append('pageSize', this.pagingParams.pageSize.toString())
+    // add filters: all, startDate, isGoing, isHost
+    this.predicate.forEach((value, key) => {
+      if (key === 'startDate') {
+        params.append(key, (value as Date).toISOString())
+      } else {
+        // all, isGoing, isHost
+        params.append(key, value)
+      }
+    })
     return params
   }
 
