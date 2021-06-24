@@ -12,7 +12,7 @@ namespace API.Controllers
     {
         // endpoint to get a list of activities
         [HttpGet]
-        public async Task<IActionResult> GetActivities([FromQuery]PagingParams param) // get pagination parameters from query string
+        public async Task<IActionResult> GetActivities([FromQuery]ActivityParams param) // get pagination parameters from query string
         {
             // get response from mediator, initiate an instance of List in Activities
             // Mediator is the protected property in parent class BaseApiController

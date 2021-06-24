@@ -19,7 +19,7 @@ namespace Application.Activities
         // use pre-shaped ActivityDto to replace Activity class in the list, to avoid "object cycle"
         public class Query : IRequest<Result<PagedList<ActivityDto>>>
         {
-            public PagingParams Params { get; set; }
+            public ActivityParams Params { get; set; }
         }
 
         // req: Query, res: a (paginated) list of ActivityDTO
@@ -56,11 +56,27 @@ namespace Application.Activities
 
                 // Projection comes from AutoMapper QueryableExtensions, it makes SQL query much cleaner
                 var query = _context.Activities
+                    .Where(d => d.Date >= request.Params.StartDate) // filter by date: /api/activities?startDate={{activityDate}}
                     .OrderBy(d => d.Date)
                     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider,
                         new { currentUsername = _userAccessor.GetUsername() })
                     // .ToListAsync(cancellationToken);
                     .AsQueryable(); // defer the query execution, not async/await anymore
+
+                // modify the query to achieve filtering (ActivityDto)
+                // /api/activities?isGoing=true
+                if (request.Params.IsGoing && !request.Params.IsHost)
+                {
+                    // only show the activities which current user is going
+                    query = query.Where(x => x.Attendees.Any(a => a.Username == _userAccessor.GetUsername()));
+                }
+
+                // /api/activities?isHost=true
+                if (request.Params.IsHost && !request.Params.IsGoing)
+                {
+                    // only show the activities which current user is hosting
+                    query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
+                }
 
                 return Result<PagedList<ActivityDto>>.Success(
                     // directly call the static method CreateAsync() from PagedList class
