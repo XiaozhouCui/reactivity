@@ -5,7 +5,7 @@ import { history } from '../..'
 import { store } from '../stores/store'
 import { Activity, ActivityFormValues } from '../models/activity'
 import { User, UserFormValues } from '../models/user'
-import { Photo, Profile } from '../models/profile'
+import { Photo, Profile, UserActivity } from '../models/profile'
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -126,7 +126,9 @@ const Profiles = {
   // toggle follow/unfollow
   updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
   // get a list of followers or followees, depending on the query string
-  listFollowings: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+  listFollowings: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+  // get activities by username and predicate (future, past, hosting)
+  listActivities: (username: string, predicate: string) => requests.get<UserActivity[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 
 const agent = { Activities, Account, Profiles }

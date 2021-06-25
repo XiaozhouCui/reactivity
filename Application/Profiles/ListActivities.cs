@@ -43,7 +43,7 @@ namespace Application.Profiles
                 {
                     "past" => query.Where(a => a.Date <= DateTime.Now),
                     "hosting" => query.Where(a => a.HostUsername == request.Username), // HostUsername will not be returnd to client due to [JsonIgnore]
-                    _ => query.Where(a => a.Date >= DateTime.Now) // default case
+                    _ => query.Where(a => a.Date >= DateTime.Now) // default case: future activities
                 };
 
                 var activities = await query.ToListAsync();
