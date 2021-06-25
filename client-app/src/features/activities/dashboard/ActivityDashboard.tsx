@@ -5,7 +5,7 @@ import { Grid, Button, Loader } from 'semantic-ui-react'
 import LoadingComponent from '../../../app/layout/LoadingComponent'
 import { PagingParams } from '../../../app/models/pagination'
 import { useStore } from '../../../app/stores/store'
-import ActitityFilters from './ActitityFilters'
+import ActitityFilters from './ActivityFilters'
 import ActivityList from './ActivityList'
 
 const ActivityDashboard = () => {
