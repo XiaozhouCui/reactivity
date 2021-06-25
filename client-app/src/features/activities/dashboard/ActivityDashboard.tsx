@@ -7,10 +7,12 @@ import { PagingParams } from '../../../app/models/pagination'
 import { useStore } from '../../../app/stores/store'
 import ActitityFilters from './ActivityFilters'
 import ActivityList from './ActivityList'
+import ActivityListItemPlaceholder from './ActivityListItemPlaceholder'
 
 const ActivityDashboard = () => {
   const { activityStore } = useStore()
-  const { loadActivities, activityRegistry, setPagingParams, pagination } = activityStore
+  const { loadActivities, activityRegistry, setPagingParams, pagination } =
+    activityStore
   // local state to show loading of the next batch of activity
   const [loadingNext, setLoadingNext] = useState(false)
 
@@ -22,24 +24,35 @@ const ActivityDashboard = () => {
   }
 
   useEffect(() => {
-    if (activityRegistry.size <= 1) loadActivities();
+    if (activityRegistry.size <= 1) loadActivities()
   }, [activityRegistry.size, loadActivities])
 
-  // don't load the full page if it is only loading next batch of activities
-  if (activityStore.loadingInitial && !loadingNext) return <LoadingComponent content='Loading activities...' />
-
+  // don't load the full page loader if it is only loading next batch of activities
+  // if (activityStore.loadingInitial && !loadingNext) return <LoadingComponent content='Loading activities...' />
 
   return (
     <Grid>
       <Grid.Column width='10'>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={handleGetNext}
-          hasMore={!loadingNext && !!pagination && pagination.currentPage < pagination.totalPages}
-          initialLoad={false}
-        >
-          <ActivityList />
-        </InfiniteScroll>
+        {activityStore.loadingInitial && !loadingNext ? (
+          <>
+            <ActivityListItemPlaceholder />
+            <ActivityListItemPlaceholder />
+          </>
+        ) : (
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={handleGetNext}
+            hasMore={
+              !loadingNext &&
+              !!pagination &&
+              pagination.currentPage < pagination.totalPages
+            }
+            initialLoad={false}
+          >
+            <ActivityList />
+          </InfiniteScroll>
+        )}
+
         {/* <Button
           floated='right'
           content='More...'
