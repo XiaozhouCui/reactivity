@@ -1,9 +1,8 @@
-import React, { Fragment } from 'react'
 import { Segment, Button, Placeholder } from 'semantic-ui-react'
 
 export default function ActivityListItemPlaceholder() {
   return (
-    <Fragment>
+    <>
       <Placeholder fluid style={{ marginTop: 25 }}>
         <Segment.Group>
           <Segment style={{ minHeight: 110 }}>
@@ -29,6 +28,6 @@ export default function ActivityListItemPlaceholder() {
           </Segment>
         </Segment.Group>
       </Placeholder>
-    </Fragment>
+    </>
   )
 }
