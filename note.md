@@ -31,3 +31,12 @@
 - Go back to root folder, run migration `dotnet ef migrations add PhotoEntityAdded -p Persistence -s API`
 - Once relationship is added, go to API project and run `dotnet watch run` to create new table
 - To check the new table in VS Code, quick open `SQLite: Open Database`, select the db file, then click the **SQLITE EXPLORER** in VS Code side bar on the left
+
+## Add PostgreSQL to replace SQLite in development
+- Install PostgreSQL in docker: `docker run --name dev -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:latest`
+- In NuGet Gallery, install **Npgsql.EntityFrameworkCore.PostgreSQL** to Persistence project
+- Update ApplicationServiceExtensions.cs, replace `opt.UseSqlite` with `opt.UseNpgsql`
+- In appsettings.Development.json, update the connection string `Server=localhost; Port=5432; User Id=admin; Password=secret; Database=reactivities`
+- Delete Migration folder in Persistence project, to remove all SQLite migrations
+- Re-run migration using PostgreSQL provider: `dotnet ef migrations add PGInitial -p Persistence -s API`
+- To update Entity Framework, run `dotnet tool update -g dotnet-ef`
