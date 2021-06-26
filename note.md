@@ -40,3 +40,14 @@
 - Delete Migration folder in Persistence project, to remove all SQLite migrations
 - Re-run migration using PostgreSQL provider: `dotnet ef migrations add PGInitial -p Persistence -s API`
 - To update Entity Framework, run `dotnet tool update -g dotnet-ef`
+
+## Setup Heroku
+- On Heroku, create a project **reactivities88**
+- Create a PostgreSQL database: *Resources -> Add-ons -> Heroku Postgres -> free version*
+- Install Heroku CLI, then run `heroku login`
+- Add remote repo: `heroku git:remote -a reactivities88`
+- Add buildpack: `heroku buildpacks:set https://github.com/jincod/dotnetcore-buildpack`
+
+## Deploy on Heroku
+- Update services.AddDbContext to dynamically get DB connection string from Heroku
+- Commit changes and run `git push heroku main`
