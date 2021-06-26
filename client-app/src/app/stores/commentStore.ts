@@ -22,7 +22,7 @@ export default class CommentStore {
     // before making connection, check that we have a selected activity in activity store
     if (store.activityStore.selectedActivity) {
       this.hubConnection = new HubConnectionBuilder()
-        .withUrl('http://localhost:5000/chat?activityId=' + activityId, {
+        .withUrl(process.env.REACT_APP_CHAT_URL + '?activityId=' + activityId, {
           accessTokenFactory: () => store.userStore.user?.token!,
         })
         .withAutomaticReconnect() // reconnect to chat hub if connection is lost
