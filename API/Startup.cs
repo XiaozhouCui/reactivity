@@ -61,6 +61,9 @@ namespace API
 
             app.UseRouting();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles(); // default folder: wwwroot
+
             app.UseCors("CorsPolicy");
 
             // authentication must come BEFORE authorization
@@ -73,6 +76,8 @@ namespace API
                 endpoints.MapControllers();
                 // Instead of API controllers, we use SignalR Hubs as endpoints for client
                 endpoints.MapHub<ChatHub>("/chat");
+                // deal with frontend routes (react-router-dom), need a controller "Fallback" with action called "Index"
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
