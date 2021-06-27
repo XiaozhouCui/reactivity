@@ -1,3 +1,39 @@
+## Create .Net project
+- Install .Net SDK, run `dotnet --info` to check details
+- In *reactivities* folder, create a new solution file `dotnet new sln`
+- Create a web api project called **API** in *API* folder: `dotnet new webapi -n API`
+- Create a class library project called **Application** : `dotnet new classlib -n Application`
+- Create a class library project called **Domain** : `dotnet new classlib -n Domain`
+- Create a class library project called **Persistence** : `dotnet new classlib -n Persistence`
+- Add API project into solution: `dotnet sln add API` <!-- `dotnet sln add API/API.csproj` -->
+- Add other projects into solution: `dotnet sln add Application`, `dotnet sln add Persistence`, `dotnet sln add Domain`
+
+## Setup dependencies between projects
+- This project has a Clean Arthitecture, Domain is in the centre and doesn't have dependency on anything
+- API depends on Application, Application depends on both Domain and Persistence, Persistence depends on Domain
+- Go to *API* folder, run `dotnet add reference ../Application`
+- Go to *Application* folder, run `dotnet add reference ../Persistence`, and `dotnet add reference ../Domain`
+- Go to *Persistence* folder, run `dotnet add reference ../Domain`
+
+## VS Code settings
+- In VS Code, install NuGet Gallery plugin, install C# Extensions
+- In settings, find *Private Member Prefix*, and use `_`. This will create `_config` as private property
+- In settings, find *Use This For Ctor Assignments* and uncheck it. Then `this.` will not show up in constructor functions
+
+## Add Entity Framework Db Context
+- Use *ctrl + shift + p* to open command palet, then select **NuGet: Open Nuget Gallery**
+- In Nuget, install *Microshft.EntityFrameworkCore.Sqlite* into Persistence project
+- In Nuget, install *Microshft.EntityFrameworkCore.Design* into API project
+- DbContext is an abstraction from database
+
+## First Migration
+- Run migrations to create database from `DbSet<T>`
+- Go to root folder, run `dotnet tool list --globala` to check global tools, make sure **dotnet-ef** is installed
+- If not installed, run `dotnet tool install --global dotnet-ef` to install Entity Framework
+- In root folder, run `dotnet ef migrations add InitialCreate -p Persistence -s API`
+- `-p Persistence` find the project where DbContext is.
+- `-s API` starter project which is the API project
+
 ## Reset database with seed values
 - To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`
 - `-s` is for starter project, `-p` is for project
@@ -23,7 +59,7 @@
 
 ## Integrate Cloudinary
 - Register a new account at Cloudinary for photo uploads
-- In NuGet, install CloudinaryDotNet SDK into Infrastructure project
+- In NuGet, install *CloudinaryDotNet SDK* into Infrastructure project
 - In API project, edit `appsettings.json` to include CloudName, ApiKeys and ApiSecret for Cloudinary
 
 ## Adding Photo entity and relate to AppUsers
@@ -34,7 +70,7 @@
 
 ## Add PostgreSQL to replace SQLite in development
 - Install PostgreSQL in docker: `docker run --name dev -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:latest`
-- In NuGet Gallery, install **Npgsql.EntityFrameworkCore.PostgreSQL** to Persistence project
+- In NuGet Gallery, install *Npgsql.EntityFrameworkCore.PostgreSQL* to Persistence project
 - Update ApplicationServiceExtensions.cs, replace `opt.UseSqlite` with `opt.UseNpgsql`
 - In appsettings.Development.json, update the connection string `Server=localhost; Port=5432; User Id=admin; Password=secret; Database=reactivities`
 - Delete Migration folder in Persistence project, to remove all SQLite migrations
@@ -53,5 +89,5 @@
 - Commit changes and run `git push heroku`
 
 ## Improve security
-- In NuGet, install **NWebsec.AspNetCore.Middleware** to API
+- In NuGet, install *NWebsec.AspNetCore.Middleware* to API
 - Add security middleware in Startup.cs
