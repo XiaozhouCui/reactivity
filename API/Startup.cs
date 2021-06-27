@@ -50,6 +50,22 @@ namespace API
         {
             app.UseMiddleware<ExceptionMiddleware>(); // error handling middleware should be added first
 
+            // security settings
+            app.UseXContentTypeOptions();
+            app.UseReferrerPolicy(opt => opt.NoReferrer()); // tell browser not to send referrer info
+            app.UseXXssProtection(opt => opt.EnabledWithBlockMode()); // Cross-site-scripting protection
+            app.UseXfo(opt => opt.Deny()); // prevent from being used in iframes somewhere else
+            app.UseCspReportOnly(opt => opt // Content-Security-Policy-Report-Only header
+                // chain various policies (report only)
+                .BlockAllMixedContent() // https only
+                .StyleSources(s => s.Self()) // css files only come from its own domain name
+                .FontSources(s => s.Self())
+                .FormActions(s => s.Self())
+                .FrameAncestors(s => s.Self())
+                .ImageSources(s => s.Self())
+                .ScriptSources(s => s.Self())
+            );
+
             if (env.IsDevelopment())
             {
                 // order of middlewares is important

@@ -50,4 +50,8 @@
 
 ## Deploy on Heroku
 - Update services.AddDbContext to dynamically get DB connection string from Heroku
-- Commit changes and run `git push heroku main`
+- Commit changes and run `git push heroku`
+
+## Improve security
+- In NuGet, install **NWebsec.AspNetCore.Middleware** to API
+- Add security middleware in Startup.cs
