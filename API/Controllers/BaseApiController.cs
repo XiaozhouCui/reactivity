@@ -8,7 +8,7 @@ namespace API.Controllers
 {
     // ApiController attribute: API validation with auto HTTP 400 responses
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // [controller] is a placeholder, can be acitvities, profiles, photos etc.
     public class BaseApiController : ControllerBase
     {
         // add fields/properties to be used in derived classes

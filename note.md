@@ -16,7 +16,7 @@
 - Go to *Persistence* folder, run `dotnet add reference ../Domain`
 
 ## VS Code settings
-- In VS Code, install NuGet Gallery plugin, install C# Extensions
+- In VS Code, install NuGet Gallery plugin, install C# Extensions, install SQLite
 - In settings, find *Private Member Prefix*, and use `_`. This will create `_config` as private property
 - In settings, find *Use This For Ctor Assignments* and uncheck it. Then `this.` will not show up in constructor functions
 
@@ -31,8 +31,13 @@
 - Go to root folder, run `dotnet tool list --globala` to check global tools, make sure **dotnet-ef** is installed
 - If not installed, run `dotnet tool install --global dotnet-ef` to install Entity Framework
 - In root folder, run `dotnet ef migrations add InitialCreate -p Persistence -s API`
-- `-p Persistence` find the project where DbContext is.
-- `-s API` starter project which is the API project
+- `-p Persistence` specify the project where DbContext is located.
+- `-s API` specify the starter project which is the API project
+- Use *ctrl + shift + p* to open command palet, select **SQLite: Open Database**, then select the .db file. On the left pane of VS Code there will be a new option **SQLITE EXPLORER**
+
+## Seeding data to the database
+- In Persistence project, create a Seed.cs file to include all seeding data
+- Add `Seed.SeedData()` in Program.cs, run the app will auto seed the database if db has no activity.
 
 ## Reset database with seed values
 - To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`

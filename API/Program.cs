@@ -31,7 +31,7 @@ namespace API
                 var context = services.GetRequiredService<DataContext>();
                 // bring in the User Manager to add seed data for app users
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
-                // MigrateAsync() will create the database if it does not exist
+                // MigrateAsync() will create the database and apply migration if it does not exist
                 await context.Database.MigrateAsync();
                 // async seeder function SeedData() will populate the DB is there is no activities in it
                 await Seed.SeedData(context, userManager);
