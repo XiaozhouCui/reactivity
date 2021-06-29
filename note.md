@@ -15,6 +15,13 @@
 - Go to *Application* folder, run `dotnet add reference ../Persistence`, and `dotnet add reference ../Domain`
 - Go to *Persistence* folder, run `dotnet add reference ../Domain`
 
+## CQRS + Mediator pattern
+- CQRS: Command Query Responsibility Segregation (command and query separation)
+- Command: does somthing, modifies state, should not return a value
+- Query: answers a question, does not modify state, should return a value
+- API Controllers use `Mediator.Send()` to send requests (C & Q) to IRequestHandler in Application project
+- Benefit of CQRS is when using separate databases: one for read (read replica or NoSQL) and one for write
+
 ## VS Code settings
 - In VS Code, install NuGet Gallery plugin, install C# Extensions, install SQLite
 - In settings, find *Private Member Prefix*, and use `_`. This will create `_config` as private property
@@ -38,6 +45,11 @@
 ## Seeding data to the database
 - In Persistence project, create a Seed.cs file to include all seeding data
 - Add `Seed.SeedData()` in Program.cs, run the app will auto seed the database if db has no activity.
+
+## Install Mediator
+- In NuGet, install *MediatR.Extensions.Microsoft.DependencyInjection* into Application project
+- In controllers, use `Mediator.Send()` to asynchronously send Query/Command to the corresponding handlers in Application
+- Wire up Mediator in Startup.cs, add `services.AddMediatR()`
 
 ## Reset database with seed values
 - To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`

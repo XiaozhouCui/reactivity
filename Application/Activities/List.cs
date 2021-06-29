@@ -15,14 +15,15 @@ namespace Application.Activities
 {
     public class List
     {
-        // Query class will return a list of Activities as the generic type of Result class
+        // nested class Query will return a list of Activities as the generic type of Result class
         // use pre-shaped ActivityDto to replace Activity class in the list, to avoid "object cycle"
         public class Query : IRequest<Result<PagedList<ActivityDto>>>
         {
+            // property Params is used as a parameter in Mediator.Send(new List.Query{Params = param})
             public ActivityParams Params { get; set; }
         }
 
-        // req: Query, res: a (paginated) list of ActivityDTO
+        // pass in a Query, return a (paginated) list of ActivityDTO
         public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDto>>>
         {
             // inject DataContext, IMapper and IUserAccessor into constructor
@@ -33,10 +34,9 @@ namespace Application.Activities
             {
                 _userAccessor = userAccessor;
                 _mapper = mapper;
-                // context is the database
                 _context = context;
             }
-            // Handle is an async method
+            // Handle is an async method, coming from IRequestHandler
             public async Task<Result<PagedList<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 /*========== EAGERLY LOADING RELATED DATA ==========*/

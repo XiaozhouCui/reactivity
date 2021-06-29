@@ -13,7 +13,7 @@ namespace API.Controllers
     {
         // add fields/properties to be used in derived classes
         private IMediator _mediator;
-        // protected property Mediator: dependency injection for MediatR?
+        // protected property Mediator: injected in one place and used in all derived controllers, will have Mediator.Send() method
         // ??= means if _mediator is null, use the right hand side expression
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices
             .GetService<IMediator>();
