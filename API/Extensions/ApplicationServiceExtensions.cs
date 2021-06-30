@@ -17,7 +17,7 @@ namespace API.Extensions
     // move methods from Startup.cs here, refactoring the startup processes
     public static class ApplicationServiceExtensions
     {
-        // extending IServiceCollection
+        // extending IServiceCollection, need to add "this"
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddSwaggerGen(c =>

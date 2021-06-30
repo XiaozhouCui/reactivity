@@ -48,8 +48,21 @@
 
 ## Install Mediator
 - In NuGet, install *MediatR.Extensions.Microsoft.DependencyInjection* into Application project
-- In controllers, use `Mediator.Send()` to asynchronously send Query/Command to the corresponding handlers in Application
-- Wire up Mediator in Startup.cs, add `services.AddMediatR()`
+- Wire up Mediator in Startup.cs, add `services.AddMediatR(typeof(List.Handler).Assembly)`
+- Add AutoMapper into BaseApiController, which will be inherited by all controllers
+- In all other controllers, use `Mediator.Send()` to asynchronously send Query/Command to the corresponding handlers in Application
+
+## Install AutoMapper
+- In NuGet, install *AutoMapper.Extensions.Microsoft.DependencyInjection* into Application project
+- Create a new file *Application/Core/MappingProfiles.cs*, add all mappers inside its Constructor function
+- Wire up AutoMapper in Startup.cs, add `services.AddAutoMapper(typeof(MappingProfiles).Assembly)`
+- Inject `IMapper` as `_mapper` into request handlers inside Application project, use `_mapper.Map(src, dest)` in handlers
+
+## Refactor Startup.cs
+- Create an extension class *API/Extensions/ApplicationServiceExtensions.cs*
+- In the extension class, `AddApplicationServices()` will extend the IServiceCollection interface
+- Move services from Startup class into `AddApplicationServices()` method in the extension class
+- In Startup class, call `services.AddApplicationServices(_config)` to register all services in extension class
 
 ## Reset database with seed values
 - To drop the messed up database, run `dotnet ef database drop -s API -p Persistence`

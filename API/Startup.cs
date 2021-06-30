@@ -38,8 +38,8 @@ namespace API
                     // any validators in Application layer will be registered with controllers
                     config.RegisterValidatorsFromAssemblyContaining<Create>();
                 });
-            // all methods are saved in API.Extensions
-            services.AddApplicationServices(_config);
+            // all other methods are moved to API.Extensions.ApplicationServiceExtensions
+            services.AddApplicationServices(_config); // will return an IServiceCollection
             // basic identity configuration
             services.AddIdentityServices(_config);
         }
